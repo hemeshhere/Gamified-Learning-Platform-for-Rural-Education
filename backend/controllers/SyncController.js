@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Progress = require('../models/Progress');
-const User = require('../models/User');
-const { requireAuth } = require('../middlewares/auth');
+const Progress = require('../models/progressModel');
+const User = require('../models/userModel');
+const { requireAuth } = require('../middlewares/authMiddleware');
 
 // POST /api/sync
 // body: { clientId, ops: [ { opId, type, payload } ] }
