@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Notification = require('../models/Notification');
-const User = require('../models/User');
-const emailService = require('../services/email');
-const { requireAuth, requireRole } = require('../middlewares/auth');
+const Notification = require('../models/NotificationModel');
+const emailService = require('../services/emailServices');
+const { requireAuth, requireRole } = require('../middlewares/authMiddleware');
 
 // Send notification (teacher/admin)
 router.post('/', requireAuth, requireRole(['teacher','admin']), async (req,res,next) => {

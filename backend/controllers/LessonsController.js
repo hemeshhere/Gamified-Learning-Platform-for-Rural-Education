@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const Lesson = require('../models/Lesson');
-const { requireAuth, requireRole } = require('../middlewares/auth');
+const Lesson = require('../models/LessonModel');
+const { requireAuth, requireRole } = require('../middlewares/authMiddleware');
 
 // create lesson (teacher/admin)
 router.post('/', requireAuth, requireRole(['teacher','admin']), async (req,res,next) => {
