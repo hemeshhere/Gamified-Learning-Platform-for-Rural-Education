@@ -9,6 +9,12 @@ const errorHandler = require('./middlewares/errorHandlerMiddleware');
 app.use(express.json());
 app.use(cors());
 
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url}`);
+  next();
+});
+
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,

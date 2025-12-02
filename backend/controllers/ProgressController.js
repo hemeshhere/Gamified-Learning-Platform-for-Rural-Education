@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-
 const Progress = require('../models/progressModel');
 const User = require('../models/userModel');
+const Lesson = require('../models/lessonModel');
 const { requireAuth } = require('../middlewares/authMiddleware');
 const { requireRole } = require('../middlewares/rolesMiddleware'); 
 const { addXp, DEFAULT_LESSON_XP } = require('../utils/xpUtils');
+const badgeEngine = require('../services/badgeEngineServices');
 
 // ----- teacher/admin manual update -----
 router.post('/', requireAuth, requireRole(['teacher','admin']), async (req, res, next) => {
@@ -88,8 +89,14 @@ router.post('/complete', requireAuth, async (req, res, next) => {
 
     // mirror to user
     await User.findByIdAndUpdate(studentId, { xp: prog.xp, level: prog.level });
-
-    return res.json({ message: 'Lesson completed', lesson: { id: lesson._id, title: lesson.title }, xpEarned: earned, progress: prog });
+    const newBadges = await badgeEngine.checkAndAwardBadges(studentId);
+    return res.json({
+  message: 'Lesson completed',
+  lesson: { id: lesson._id, title: lesson.title },
+  xpEarned: earned,
+  newBadges,
+  progress: prog
+});
   } catch (err) {
     next(err);
   }
