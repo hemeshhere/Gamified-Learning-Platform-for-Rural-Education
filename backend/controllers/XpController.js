@@ -34,9 +34,18 @@ router.post('/add', requireAuth, requireRole(['teacher', 'admin']), async (req, 
     prog.level = calculateLevel(prog.xp);
 
     await prog.save();
-    await User.findByIdAndUpdate(studentId, { xp: prog.xp, level: prog.level });
+    await User.findByIdAndUpdate(studentId, { xp: prog.xp, level: prog.level });  
+    const badgeEngine = require('../services/badgeEngineServices');
+    const newBadges = await badgeEngine.checkAndAwardBadges(studentId);
 
-    res.json({ message: 'XP added', studentId, xp: prog.xp, level: prog.level });
+    res.json({
+      message: 'XP added',
+      studentId,
+      xp: prog.xp,
+      level: prog.level,
+      newBadges
+    });
+
 
   } catch (err) {
     next(err);
