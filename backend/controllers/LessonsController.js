@@ -6,8 +6,8 @@ const { requireAuth, requireRole } = require('../middlewares/authMiddleware');
 // create lesson (teacher/admin)
 router.post('/', requireAuth, requireRole(['teacher','admin']), async (req,res,next) => {
   try {
-    const { title, description, fileUrl, language, grade } = req.body;
-    const lesson = await Lesson.create({ title, description, fileUrl, language, grade, createdBy: req.user.id });
+    const { title, description, fileUrl, videoUrl, language, grade } = req.body;
+    const lesson = await Lesson.create({ title, description, fileUrl, videoUrl, language, grade, createdBy: req.user.id });
     res.status(201).json(lesson);
   } catch (err){ next(err); }
 });
