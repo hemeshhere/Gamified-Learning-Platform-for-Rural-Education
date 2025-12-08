@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const Notification = require("../models/NotificationModel");
+const Notification = require("../models/notificationModel");
 const User = require("../models/userModel");   // ✅ REQUIRED FIX
 const emailService = require("../services/emailServices");
 const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
