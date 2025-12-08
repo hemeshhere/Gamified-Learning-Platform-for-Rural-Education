@@ -91,15 +91,15 @@ router.post('/complete', requireAuth, async (req, res, next) => {
     await User.findByIdAndUpdate(studentId, { xp: prog.xp, level: prog.level });
     const newBadges = await badgeEngine.checkAndAwardBadges(studentId);
     return res.json({
-  message: 'Lesson completed',
-  lesson: { id: lesson._id, title: lesson.title },
-  xpEarned: earned,
-  newBadges,
-  progress: prog
-});
-  } catch (err) {
-    next(err);
-  }
+      message: 'Lesson completed',
+      lesson: { id: lesson._id, title: lesson.title },
+      xpEarned: earned,
+      newBadges,
+      progress: prog
+    });
+      } catch (err) {
+        next(err);
+      }
 });
 
 // GET progress (existing)

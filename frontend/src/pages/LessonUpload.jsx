@@ -3,7 +3,7 @@ import api from "../api/axios";
 import Navbar from "../components/common/Navbar";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FiUploadCloud } from "react-icons/fi";
+import { FiUploadCloud, FiFileText, FiVideo, FiBookOpen } from "react-icons/fi";
 
 export default function LessonUpload() {
   const navigate = useNavigate();
@@ -12,8 +12,8 @@ export default function LessonUpload() {
   const [description, setDescription] = useState("");
   const [language, setLanguage] = useState("English");
   const [grade, setGrade] = useState("");
-  const [file, setFile] = useState(null);
-  const [video, setVideo] = useState(null);
+  const [fileUrl, setFileUrl] = useState("");   // PDF URL
+  const [videoUrl, setVideoUrl] = useState(""); // Video URL
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -23,17 +23,16 @@ export default function LessonUpload() {
     setMessage("");
 
     try {
-      const form = new FormData();
-      form.append("title", title);
-      form.append("description", description);
-      form.append("language", language);
-      form.append("grade", grade);
-      if (file) form.append("file", file);
-      if (video) form.append("video", video);
+      const payload = {
+        title,
+        description,
+        language,
+        grade,
+        fileUrl,
+        videoUrl,
+      };
 
-      const res = await api.post("/lessons", form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await api.post("/lessons", payload);
 
       setMessage("Lesson created successfully! 🎉 Redirecting...");
       setTimeout(() => navigate("/lessons"), 1200);
@@ -74,7 +73,7 @@ export default function LessonUpload() {
           </motion.div>
         )}
 
-        {/* FORM CONTAINER */}
+        {/* FORM */}
         <motion.form
           onSubmit={submit}
           initial={{ opacity: 0 }}
@@ -142,29 +141,31 @@ export default function LessonUpload() {
             />
           </div>
 
-          {/* PDF Upload */}
+          {/* PDF URL */}
           <div>
-            <label className="block mb-1 font-semibold text-gray-700">
-              Upload PDF (Optional)
+            <label className="block mb-1 font-semibold text-gray-700 flex items-center gap-2">
+              <FiFileText className="text-purple-600" /> PDF URL 
             </label>
             <input
-              type="file"
-              accept="application/pdf"
-              className="w-full text-sm"
-              onChange={(e) => setFile(e.target.files[0])}
+              type="text"
+              className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-400 outline-none shadow-sm"
+              placeholder="https://example.com/lesson.pdf"
+              value={fileUrl}
+              onChange={(e) => setFileUrl(e.target.value)}
             />
           </div>
 
-          {/* Video Upload */}
+          {/* Video URL */}
           <div>
-            <label className="block mb-1 font-semibold text-gray-700">
-              Upload Video (Optional)
+            <label className="block mb-1 font-semibold text-gray-700 flex items-center gap-2">
+              <FiVideo className="text-red-600" /> Video URL 
             </label>
             <input
-              type="file"
-              accept="video/*"
-              className="w-full text-sm"
-              onChange={(e) => setVideo(e.target.files[0])}
+              type="text"
+              className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-red-400 outline-none shadow-sm"
+              placeholder="https://youtube.com/watch?v=ABC123"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
             />
           </div>
 
@@ -180,7 +181,7 @@ export default function LessonUpload() {
                   : "bg-blue-600 hover:bg-blue-700"
               }`}
           >
-            {busy ? "Uploading..." : "Create Lesson"}
+            {busy ? "Saving..." : "Create Lesson"}
           </motion.button>
         </motion.form>
       </motion.div>

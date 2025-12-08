@@ -26,7 +26,8 @@ import LessonUpload from "./pages/LessonUpload";
 import QuizCreate from "./pages/QuizCreate";
 import TeacherAddXP from "./pages/TeacherAddXP";
 import TeacherSendNotification from "./pages/TeacherSendNotification";
-
+import TeacherManageContent from "./pages/TeacherManageContent";
+import TeacherStudentList from "./pages/TeacherStudentList";
 export default function App() {
   return (
     <BrowserRouter>
@@ -67,6 +68,8 @@ export default function App() {
           <Route path="/teacher/create-quiz" element={<QuizCreate />} />
           <Route path="/teacher/add-xp" element={<TeacherAddXP />} />
           <Route path="/teacher/send-notification" element={<TeacherSendNotification />} />
+          <Route path="/teacher/manage" element={<TeacherManageContent />} />
+          <Route path="/teacher/students" element={<TeacherStudentList />} />
         </Route>
 
       </Routes>

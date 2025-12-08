@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FiBook, FiEdit, FiStar, FiBell } from "react-icons/fi";
+import { FiBook, FiEdit, FiStar, FiBell, FiSettings, FiUser } from "react-icons/fi";
 import TeacherSidebar from "../components/common/TeacherSidebar";
 
 export default function TeacherDashboard() {
@@ -112,7 +112,7 @@ export default function TeacherDashboard() {
   </motion.div>
 
   {/* Send Notification */}
-  <motion.div
+    <motion.div
     variants={cardVariants}
     initial="hidden"
     animate="show"
@@ -130,6 +130,44 @@ export default function TeacherDashboard() {
     </Link>
   </motion.div>
 
+    {/* Manage Lessons & Quizzes */}
+  <motion.div
+    variants={cardVariants}
+    initial="hidden"
+    animate="show"
+    whileHover="hover"
+    custom={4}
+    className="rounded-2xl"
+  >
+    <Link
+      to="/teacher/manage"
+      className="block p-6 rounded-2xl bg-white/60 backdrop-blur-xl shadow-md border border-gray-200 hover:shadow-xl transition"
+    >
+      <FiSettings className="text-4xl text-purple-600 mb-4" />
+      <h3 className="font-semibold text-xl">Manage Content</h3>
+      <p className="text-gray-600 mt-2">
+        Edit or delete lessons & quizzes easily.
+      </p>
+    </Link>
+  </motion.div>
+
+  <motion.div
+    variants={cardVariants}
+    initial="hidden"
+    animate="show"
+    whileHover="hover"
+    custom={4}
+    className="rounded-2xl"
+  >
+    <Link
+      to="/teacher/students"
+      className="block p-6 rounded-2xl bg-white/60 backdrop-blur-xl shadow-md border border-gray-200 hover:shadow-xl transition"
+    >
+      <FiUser className="text-4xl text-indigo-600 mb-4" />
+      <h3 className="font-semibold text-xl">Students</h3>
+      <p className="text-gray-600 mt-2">View and manage all student profiles.</p>
+    </Link>
+  </motion.div>
 </div>
 
         </section>
