@@ -127,5 +127,22 @@ router.get('/:studentId', requireAuth, async (req, res, next) => {
   }
 });
 
+// GET student badges
+router.get('/badges/:studentId', requireAuth, async (req, res, next) => {
+  try {
+    const studentId = req.params.studentId;
+
+    const prog = await Progress.findOne({ student: studentId })
+      .populate("badges", "name icon description");
+
+    if (!prog) {
+      return res.json([]);
+    }
+
+    res.json(prog.badges || []);
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = router;

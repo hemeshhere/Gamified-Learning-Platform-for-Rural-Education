@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import api from "../api/axios";
 import Navbar from "../components/common/Navbar";
+import { FiBell, FiStar, FiAward } from "react-icons/fi";
 
 // Convert date → "2 hours ago"
 function timeAgo(date) {
@@ -27,10 +28,7 @@ export default function NotificationsPage() {
     error,
   } = useQuery({
     queryKey: ["notifications"],
-    queryFn: async () => {
-      const res = await api.get("/notifications");
-      return res.data;
-    },
+    queryFn: async () => (await api.get("/notifications")).data,
     refetchInterval: 20000,
   });
 
@@ -38,12 +36,39 @@ export default function NotificationsPage() {
     <>
       <Navbar />
 
-      <div className="max-w-3xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6">Notifications</h1>
+      {/* Background */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-pink-200 via-yellow-200 to-blue-200 opacity-90"></div>
+
+      {/* Floating Icons */}
+      <motion.div
+        className="fixed top-28 left-8 text-purple-600 opacity-30"
+        animate={{ y: [0, -15, 0] }}
+        transition={{ duration: 3, repeat: Infinity }}
+      >
+        <FiBell size={80} />
+      </motion.div>
+
+      <motion.div
+        className="fixed bottom-20 right-10 text-yellow-500 opacity-30"
+        animate={{ y: [0, 12, 0] }}
+        transition={{ duration: 4, repeat: Infinity }}
+      >
+        <FiAward size={75} />
+      </motion.div>
+
+      {/* Main Content */}
+      <div className="max-w-3xl mx-auto p-6 mt-8">
+        <motion.h1
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-4xl font-extrabold text-purple-700 drop-shadow mb-6 flex gap-2 items-center"
+        >
+          🔔 Notifications
+        </motion.h1>
 
         {/* Loading */}
         {isLoading && (
-          <div className="text-center text-gray-600 text-lg animate-pulse">
+          <div className="text-center text-gray-700 text-lg animate-pulse">
             Loading notifications...
           </div>
         )}
@@ -57,9 +82,13 @@ export default function NotificationsPage() {
 
         {/* Empty */}
         {!isLoading && notifications.length === 0 && (
-          <div className="text-center text-gray-500 text-lg mt-10">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center text-gray-600 text-xl mt-14 font-medium"
+          >
             No notifications yet 👀  
-          </div>
+          </motion.div>
         )}
 
         {/* Notification Items */}
@@ -70,21 +99,38 @@ export default function NotificationsPage() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
-              className="bg-white border rounded-xl p-4 shadow-sm flex gap-4 items-start hover:shadow-lg transition cursor-pointer"
+              whileHover={{ scale: 1.02 }}
+              className="bg-white/70 backdrop-blur-xl border-2 border-purple-200 rounded-2xl p-5 shadow-xl flex gap-4 items-start cursor-pointer hover:shadow-2xl transition"
             >
-              {/* Icon */}
-              <div className="text-3xl">
-                {n.type === "badge" ? "🏅" : n.type === "teacher" ? "📢" : "🔔"}
+              {/* Icon Bubble */}
+              <div
+                className={`text-3xl p-3 rounded-full shadow-md 
+                ${
+                  n.type === "badge"
+                    ? "bg-yellow-100 text-yellow-700"
+                    : n.type === "teacher"
+                    ? "bg-blue-100 text-blue-700"
+                    : "bg-purple-100 text-purple-700"
+                }`}
+              >
+                {n.type === "badge"
+                  ? "🏅"
+                  : n.type === "teacher"
+                  ? "📢"
+                  : "🔔"}
               </div>
 
               {/* Content */}
               <div className="flex-1">
-                <div className="font-semibold text-lg">{n.title}</div>
-                <div className="text-gray-700 text-sm">{n.body}</div>
+                <div className="font-bold text-lg text-gray-800">
+                  {n.title}
+                </div>
+
+                <div className="text-gray-700 text-sm mt-1">{n.body}</div>
 
                 {/* Time */}
-                <div className="text-xs text-gray-500 mt-1">
-                  {timeAgo(n.sentAt)}   
+                <div className="text-xs text-gray-500 mt-2">
+                  {timeAgo(n.sentAt)}
                 </div>
               </div>
             </motion.div>

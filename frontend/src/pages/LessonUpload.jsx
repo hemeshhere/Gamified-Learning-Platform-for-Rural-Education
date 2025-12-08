@@ -3,7 +3,13 @@ import api from "../api/axios";
 import Navbar from "../components/common/Navbar";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FiUploadCloud, FiFileText, FiVideo, FiBookOpen } from "react-icons/fi";
+import {
+  FiUploadCloud,
+  FiFileText,
+  FiVideo,
+  FiBookOpen,
+  FiStar
+} from "react-icons/fi";
 
 export default function LessonUpload() {
   const navigate = useNavigate();
@@ -12,8 +18,8 @@ export default function LessonUpload() {
   const [description, setDescription] = useState("");
   const [language, setLanguage] = useState("English");
   const [grade, setGrade] = useState("");
-  const [fileUrl, setFileUrl] = useState("");   // PDF URL
-  const [videoUrl, setVideoUrl] = useState(""); // Video URL
+  const [fileUrl, setFileUrl] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -23,23 +29,19 @@ export default function LessonUpload() {
     setMessage("");
 
     try {
-      const payload = {
+      await api.post("/lessons", {
         title,
         description,
         language,
         grade,
         fileUrl,
         videoUrl,
-      };
+      });
 
-      await api.post("/lessons", payload);
-
-      setMessage("Lesson created successfully! 🎉 Redirecting...");
-      setTimeout(() => navigate("/lessons"), 1200);
+      setMessage("🎉 Lesson created successfully! Redirecting...");
+      setTimeout(() => navigate("/lessons"), 1500);
     } catch (err) {
-      setMessage(
-        err?.response?.data?.message || "Failed to upload lesson. Try again."
-      );
+      setMessage(err?.response?.data?.message || "❌ Failed to upload lesson.");
     } finally {
       setBusy(false);
     }
@@ -49,74 +51,94 @@ export default function LessonUpload() {
     <>
       <Navbar />
 
+      {/* 🌈 Gradient Background */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-blue-200 via-pink-200 to-yellow-200 opacity-90"></div>
+
+      {/* Floating Icons */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-3xl mx-auto p-6"
+        animate={{ y: [0, -12, 0] }}
+        transition={{ repeat: Infinity, duration: 3 }}
+        className="fixed top-24 left-10 text-purple-600 opacity-40"
       >
-        <h1 className="text-3xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-          <FiUploadCloud className="text-blue-600" /> Create New Lesson
+        <FiBookOpen size={70} />
+      </motion.div>
+
+      <motion.div
+        animate={{ y: [0, 12, 0] }}
+        transition={{ repeat: Infinity, duration: 4 }}
+        className="fixed bottom-16 right-10 text-yellow-500 opacity-40"
+      >
+        <FiStar size={65} />
+      </motion.div>
+
+      {/* ---------------- PAGE CONTENT ---------------- */}
+      <motion.div
+        initial={{ opacity: 0, y: 25 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="max-w-3xl mx-auto p-6 mt-12"
+      >
+        <h1 className="text-5xl font-extrabold mb-8 text-purple-700 flex items-center gap-3 drop-shadow-sm">
+          📘 Upload New Lesson
         </h1>
 
-        {/* Message Box */}
+        {/* Status Message */}
         {message && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className={`p-3 rounded-lg mb-4 text-sm shadow ${
+            className={`p-4 rounded-2xl mb-5 shadow-lg text-md border ${
               message.includes("success")
-                ? "bg-green-50 text-green-700 border border-green-300"
-                : "bg-red-50 text-red-700 border border-red-300"
+                ? "bg-green-100 text-green-700 border-green-300"
+                : "bg-red-100 text-red-700 border-red-300"
             }`}
           >
             {message}
           </motion.div>
         )}
 
-        {/* FORM */}
+        {/* ---------------- FORM CARD ---------------- */}
         <motion.form
           onSubmit={submit}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-xl border border-gray-200 space-y-5"
+          className="bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-xl border-2 border-blue-200 space-y-6"
         >
-          {/* Title */}
+          {/* TITLE */}
           <div>
-            <label className="block mb-1 font-semibold text-gray-700">
-              Lesson Title *
+            <label className="block mb-1 font-semibold text-purple-700 text-lg">
+              📚 Lesson Title *
             </label>
             <input
-              type="text"
               required
-              className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none shadow-sm"
+              className="w-full border px-4 py-3 rounded-xl shadow focus:ring-2 focus:ring-purple-400 outline-none bg-purple-50"
               placeholder="Introduction to Fractions"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
 
-          {/* Description */}
+          {/* DESCRIPTION */}
           <div>
-            <label className="block mb-1 font-semibold text-gray-700">
-              Description
+            <label className="block mb-1 font-semibold text-pink-700 text-lg">
+              ✏️ Description
             </label>
             <textarea
               rows={3}
-              className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none shadow-sm"
-              placeholder="Explain what the lesson covers..."
+              className="w-full border px-4 py-3 rounded-xl shadow focus:ring-2 focus:ring-pink-400 outline-none bg-pink-50"
+              placeholder="Short description of the lesson..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-            ></textarea>
+            />
           </div>
 
-          {/* Language */}
+          {/* LANGUAGE */}
           <div>
-            <label className="block mb-1 font-semibold text-gray-700">
-              Language
+            <label className="block mb-1 font-semibold text-blue-700 text-lg">
+              🌍 Language
             </label>
             <select
-              className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none shadow-sm"
+              className="w-full border px-4 py-3 rounded-xl shadow bg-blue-50 focus:ring-2 focus:ring-blue-400 outline-none"
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
             >
@@ -127,14 +149,14 @@ export default function LessonUpload() {
             </select>
           </div>
 
-          {/* Grade */}
+          {/* GRADE */}
           <div>
-            <label className="block mb-1 font-semibold text-gray-700">
-              Grade
+            <label className="block mb-1 font-semibold text-yellow-700 text-lg">
+              🎓 Grade
             </label>
             <input
               type="number"
-              className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none shadow-sm"
+              className="w-full border px-4 py-3 rounded-xl shadow bg-yellow-50 focus:ring-2 focus:ring-yellow-400 outline-none"
               placeholder="5"
               value={grade}
               onChange={(e) => setGrade(e.target.value)}
@@ -143,47 +165,48 @@ export default function LessonUpload() {
 
           {/* PDF URL */}
           <div>
-            <label className="block mb-1 font-semibold text-gray-700 flex items-center gap-2">
-              <FiFileText className="text-purple-600" /> PDF URL 
+            <label className="block mb-1 font-semibold text-purple-700 text-lg flex items-center gap-2">
+              <FiFileText className="text-purple-600" /> PDF URL
             </label>
             <input
-              type="text"
-              className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-purple-400 outline-none shadow-sm"
+              className="w-full border px-4 py-3 rounded-xl shadow bg-purple-50 focus:ring-2 focus:ring-purple-400 outline-none"
               placeholder="https://example.com/lesson.pdf"
               value={fileUrl}
               onChange={(e) => setFileUrl(e.target.value)}
             />
           </div>
 
-          {/* Video URL */}
+          {/* VIDEO URL */}
           <div>
-            <label className="block mb-1 font-semibold text-gray-700 flex items-center gap-2">
-              <FiVideo className="text-red-600" /> Video URL 
+            <label className="block mb-1 font-semibold text-red-700 text-lg flex items-center gap-2">
+              <FiVideo className="text-red-600" /> Video URL
             </label>
             <input
-              type="text"
-              className="w-full border px-3 py-2 rounded-lg focus:ring-2 focus:ring-red-400 outline-none shadow-sm"
+              className="w-full border px-4 py-3 rounded-xl shadow bg-red-50 focus:ring-2 focus:ring-red-400 outline-none"
               placeholder="https://youtube.com/watch?v=ABC123"
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
             />
           </div>
 
-          {/* Submit Button */}
+          {/* SUBMIT BUTTON */}
           <motion.button
-            whileHover={!busy ? { scale: 1.03 } : {}}
-            whileTap={!busy ? { scale: 0.97 } : {}}
+            whileHover={!busy ? { scale: 1.05 } : {}}
+            whileTap={!busy ? { scale: 0.95 } : {}}
             disabled={busy}
-            className={`w-full py-3 rounded-lg text-white font-semibold transition shadow 
-              ${
-                busy
-                  ? "bg-blue-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }`}
+            className={`w-full py-3 rounded-xl text-white font-bold text-lg shadow-xl transition ${
+              busy
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
-            {busy ? "Saving..." : "Create Lesson"}
+            {busy ? "Saving..." : "🚀 Create Lesson"}
           </motion.button>
         </motion.form>
+
+        <div className="text-center mt-6 text-purple-700">
+          Make learning beautiful & fun! ✨📘
+        </div>
       </motion.div>
     </>
   );

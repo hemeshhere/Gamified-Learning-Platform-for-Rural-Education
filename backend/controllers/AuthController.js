@@ -27,7 +27,6 @@ router.post('/register', async (req, res, next) => {
       return res.status(409).json({ error: "Email already exists" });
     }
 
-    // Hash password manually
     const saltRounds = Number(process.env.BCRYPT_ROUNDS) || 10;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
@@ -40,11 +39,24 @@ router.post('/register', async (req, res, next) => {
       passwordHash
     });
 
+    // ---- NEW FIX: return tokens same as login ----
+    const accessToken = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    const refreshToken = crypto.randomBytes(64).toString("hex");
+
     res.status(201).json({
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        role: user.role,
+        email: user.email
+      }
     });
 
   } catch (err) {

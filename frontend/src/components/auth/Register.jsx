@@ -4,6 +4,7 @@ import api from "../../api/axios";
 
 export default function Register() {
   const navigate = useNavigate();
+
   const [payload, setPayload] = useState({
     name: "",
     email: "",
@@ -12,60 +13,97 @@ export default function Register() {
     role: "student",
   });
 
+  const [errors, setErrors] = useState({});
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
+  const [serverError, setServerError] = useState("");
 
+  // Handle field update
   const update = (field, value) => {
     setPayload((p) => ({ ...p, [field]: value }));
+    validateField(field, value);
   };
 
+  // ------------------------------
+  // VALIDATION RULES
+  // ------------------------------
+  const validateField = (field, value) => {
+    let msg = "";
+
+    if (field === "name" && value.trim().length < 3)
+      msg = "Name must be at least 3 characters.";
+
+    if (field === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))
+      msg = "Enter a valid email address.";
+
+    if (field === "password" && value.length < 6)
+      msg = "Password must be at least 6 characters.";
+
+    if (field === "password" && !/\d/.test(value))
+      msg = "Password must contain at least one number.";
+
+    setErrors((prev) => ({ ...prev, [field]: msg }));
+  };
+
+  const isFormValid = () => {
+    return (
+      payload.name.length >= 3 &&
+      payload.email.length > 5 &&
+      !errors.email &&
+      !errors.password &&
+      payload.password.length >= 6
+    );
+  };
+
+  // ------------------------------
+  // FORM SUBMISSION
+  // ------------------------------
   const submit = async (e) => {
     e.preventDefault();
-    setError("");
+    setServerError("");
+
+    // Final validation
+    if (!isFormValid()) {
+      setServerError("Please fix the errors before submitting.");
+      return;
+    }
+
     setBusy(true);
 
     try {
-      // STEP 1: Register the user
       const res = await api.post("/auth/register", payload);
-
-      // Backend must return tokens + user object
       const data = res.data;
 
-      // STEP 2: Auto-login immediately after registration
+      // Save login automatically
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // STEP 3: Redirect based on role
-      if (data.user.role === "teacher" || data.user.role === "admin") {
-        navigate("/teacher");
-      } else {
-        navigate("/");
-      }
-
+      // Redirect by role
+      navigate(data.user.role === "teacher" ? "/teacher" : "/");
     } catch (err) {
-      setError(
-        err?.response?.data?.message ||
-          "Registration failed. Please try again."
-      );
+      setServerError(err?.response?.data?.error || "Registration failed.");
     } finally {
       setBusy(false);
     }
   };
 
+  // ------------------------------
+  // UI
+  // ------------------------------
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
         <h2 className="text-2xl font-bold text-center mb-4">Create an account</h2>
 
-        {error && (
+        {serverError && (
           <div className="bg-red-100 border border-red-400 text-red-700 p-3 rounded mb-4 text-sm">
-            {error}
+            {serverError}
           </div>
         )}
 
         <form onSubmit={submit} className="space-y-4">
 
+          {/* NAME */}
           <div>
             <label className="block text-sm font-medium mb-1">Full name</label>
             <input
@@ -75,8 +113,12 @@ export default function Register() {
               placeholder="John Doe"
               required
             />
+            {errors.name && (
+              <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+            )}
           </div>
 
+          {/* EMAIL */}
           <div>
             <label className="block text-sm font-medium mb-1">Email</label>
             <input
@@ -87,8 +129,12 @@ export default function Register() {
               placeholder="john@example.com"
               required
             />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
           </div>
 
+          {/* PASSWORD */}
           <div>
             <label className="block text-sm font-medium mb-1">Password</label>
             <input
@@ -100,8 +146,12 @@ export default function Register() {
               required
               minLength={6}
             />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
           </div>
 
+          {/* PHONE */}
           <div>
             <label className="block text-sm font-medium mb-1">Phone (optional)</label>
             <input
@@ -112,6 +162,7 @@ export default function Register() {
             />
           </div>
 
+          {/* ROLE */}
           <div>
             <label className="block text-sm font-medium mb-1">Role</label>
             <select
@@ -126,6 +177,7 @@ export default function Register() {
             </select>
           </div>
 
+          {/* SUBMIT BUTTON */}
           <button
             disabled={busy}
             className={`w-full py-2 rounded-lg text-white font-semibold transition 

@@ -3,6 +3,7 @@ import api from "../../api/axios";
 import XPPopup from "../common/XPPopup";
 import BadgePopup from "../common/BadgePopup";
 import { useQueryClient } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 
 export default function MarkCompleteButton({ lessonId }) {
   const [busy, setBusy] = useState(false);
@@ -16,6 +17,7 @@ export default function MarkCompleteButton({ lessonId }) {
 
   const markComplete = async () => {
     setBusy(true);
+
     try {
       const res = await api.post("/progress/complete", { lessonId });
       const data = res.data;
@@ -23,24 +25,18 @@ export default function MarkCompleteButton({ lessonId }) {
       if (data.xpEarned) setXp(data.xpEarned);
       if (data.newBadges?.length) setBadges(data.newBadges);
 
-      // Invalidate / refetch the progress query for this student
       if (studentId) {
         queryClient.invalidateQueries({ queryKey: ["progress", studentId] });
       }
 
-      // Optionally, update local 'user' xp/level in localStorage if backend returns updated user
+      // Sync updated XP/Level back into localStorage
       if (data.updatedProgress) {
-        // keep local user in sync (optional)
         const stored = localStorage.getItem("user");
         if (stored) {
-          try {
-            const u = JSON.parse(stored);
-            u.xp = data.updatedProgress.xp ?? u.xp;
-            u.level = data.updatedProgress.level ?? u.level;
-            localStorage.setItem("user", JSON.stringify(u));
-          } catch (e) {
-            // ignore parse errors
-          }
+          const u = JSON.parse(stored);
+          u.xp = data.updatedProgress.xp ?? u.xp;
+          u.level = data.updatedProgress.level ?? u.level;
+          localStorage.setItem("user", JSON.stringify(u));
         }
       }
     } catch (err) {
@@ -55,18 +51,20 @@ export default function MarkCompleteButton({ lessonId }) {
 
   return (
     <>
-      <button
+      <motion.button
         onClick={markComplete}
         disabled={busy}
-        className={`px-5 py-2 rounded-lg text-white font-semibold transition
+        whileHover={!busy ? { scale: 1.05 } : {}}
+        whileTap={!busy ? { scale: 0.93 } : {}}
+        className={`px-8 py-3 rounded-full text-white font-bold shadow-xl transition text-lg
           ${
             busy
-              ? "bg-green-400 cursor-not-allowed"
-              : "bg-green-600 hover:bg-green-700"
+              ? "bg-green-400 cursor-not-allowed opacity-80"
+              : "bg-gradient-to-r from-green-500 to-teal-500 hover:opacity-90"
           }`}
       >
-        {busy ? "Saving..." : "Mark as Complete"}
-      </button>
+        {busy ? "Saving..." : "🎉 Mark as Complete"}
+      </motion.button>
 
       {xp && <XPPopup xp={xp} />}
       {badges.length > 0 && <BadgePopup badges={badges} />}
