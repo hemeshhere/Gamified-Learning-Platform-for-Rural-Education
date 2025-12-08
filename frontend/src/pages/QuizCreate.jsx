@@ -2,8 +2,14 @@ import React, { useState } from "react";
 import api from "../api/axios";
 import Navbar from "../components/common/Navbar";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import { FiEdit3, FiPlusCircle, FiTrash2 } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FiEdit3,
+  FiPlusCircle,
+  FiTrash2,
+  FiBookOpen,
+  FiStar,
+} from "react-icons/fi";
 
 export default function QuizCreate() {
   const navigate = useNavigate();
@@ -13,7 +19,7 @@ export default function QuizCreate() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Add new blank question
+  /* --------------------------- ADD QUESTION --------------------------- */
   const addQuestion = () => {
     setQuestions((prev) => [
       ...prev,
@@ -26,28 +32,25 @@ export default function QuizCreate() {
     ]);
   };
 
-  // Update question text
+  /* --------------------------- UPDATE QUESTION --------------------------- */
   const updateQuestionText = (i, value) => {
     const copy = [...questions];
     copy[i].text = value;
     setQuestions(copy);
   };
 
-  // Update option
   const updateOption = (qi, oi, value) => {
     const copy = [...questions];
     copy[qi].options[oi] = value;
     setQuestions(copy);
   };
 
-  // Add option
   const addOption = (qi) => {
     const copy = [...questions];
     copy[qi].options.push("");
     setQuestions(copy);
   };
 
-  // Remove option
   const removeOption = (qi, oi) => {
     const copy = [...questions];
     if (copy[qi].options.length > 2) {
@@ -56,7 +59,7 @@ export default function QuizCreate() {
     }
   };
 
-  // Submit quiz
+  /* --------------------------- SUBMIT QUIZ --------------------------- */
   const submit = async (e) => {
     e.preventDefault();
     setBusy(true);
@@ -64,11 +67,11 @@ export default function QuizCreate() {
 
     try {
       await api.post("/quiz", { title, questions });
-      setMessage("Quiz created successfully! 🎉 Redirecting...");
-      setTimeout(() => navigate("/quiz"), 1200);
+      setMessage("🎉 Quiz created successfully! Redirecting...");
+      setTimeout(() => navigate("/quiz"), 1500);
     } catch (err) {
       setMessage(
-        err?.response?.data?.message || "Failed to create quiz. Try again."
+        err?.response?.data?.message || "❌ Failed to create quiz. Try again."
       );
     } finally {
       setBusy(false);
@@ -79,194 +82,223 @@ export default function QuizCreate() {
     <>
       <Navbar />
 
+      {/* ---------------------- Animated Background ---------------------- */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-yellow-200 via-purple-200 to-pink-200 opacity-90"></div>
+
+      {/* Floating Icons */}
+      <motion.div
+        animate={{ y: [0, -10, 0] }}
+        transition={{ repeat: Infinity, duration: 3 }}
+        className="fixed top-24 left-10 text-purple-600 opacity-40"
+      >
+        <FiEdit3 size={70} />
+      </motion.div>
+
+      <motion.div
+        animate={{ y: [0, 12, 0] }}
+        transition={{ repeat: Infinity, duration: 4 }}
+        className="fixed bottom-12 right-12 text-yellow-500 opacity-40"
+      >
+        <FiStar size={75} />
+      </motion.div>
+
+      {/* ---------------------- MAIN CONTENT ---------------------- */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-4xl mx-auto p-6"
+        className="max-w-4xl mx-auto p-6 mt-10"
       >
-        <h1 className="text-3xl font-bold mb-6 flex items-center gap-2 text-gray-800">
-          <FiEdit3 className="text-purple-600" /> Create New Quiz
+        <h1 className="text-5xl font-extrabold mb-8 flex items-center gap-3 text-purple-700 drop-shadow-sm">
+          📝 Create New Quiz
         </h1>
 
-        {/* Message */}
+        {/* ---------------------- Status Message ---------------------- */}
         {message && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className={`p-3 rounded-lg mb-4 text-sm shadow ${
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={`p-4 rounded-2xl mb-4 text-md shadow-xl border ${
               message.includes("success")
-                ? "bg-green-50 text-green-700 border border-green-300"
-                : "bg-red-50 text-red-700 border border-red-300"
+                ? "bg-green-100 text-green-700 border-green-300"
+                : "bg-red-100 text-red-700 border-red-300"
             }`}
           >
             {message}
           </motion.div>
         )}
 
-        {/* FORM */}
+        {/* ---------------------- FORM ---------------------- */}
         <motion.form
           onSubmit={submit}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="space-y-6"
+          className="space-y-8"
         >
           {/* QUIZ TITLE */}
-          <div className="bg-white/80 backdrop-blur-xl p-6 rounded-2xl border shadow-md">
-            <label className="font-semibold text-gray-700 block mb-2">
-              Quiz Title *
+          <div className="bg-white/80 backdrop-blur-xl p-6 rounded-3xl border-2 border-purple-300 shadow-xl">
+            <label className="font-semibold text-purple-700 block mb-2 text-lg">
+              📚 Quiz Title *
             </label>
             <input
               type="text"
               required
-              className="w-full border px-3 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400 outline-none"
-              placeholder="Math Test 1"
+              className="w-full border px-4 py-3 rounded-xl shadow focus:ring-2 focus:ring-purple-400 outline-none bg-purple-50"
+              placeholder="Math Quiz: Fractions & Decimals"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
 
-          {/* QUESTIONS */}
-          {questions.map((q, qi) => (
-            <motion.div
-              key={qi}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white/80 backdrop-blur-xl p-6 rounded-2xl border shadow-md space-y-4"
-            >
-              <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-gray-800">
-                  Question {qi + 1}
-                </h2>
+          {/* ---------------------- QUESTIONS LIST ---------------------- */}
+          <AnimatePresence>
+            {questions.map((q, qi) => (
+              <motion.div
+                key={qi}
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                className="bg-white/80 backdrop-blur-xl p-6 rounded-3xl border-2 border-pink-300 shadow-lg space-y-5"
+              >
+                {/* Header */}
+                <div className="flex justify-between items-center">
+                  <h2 className="text-xl font-bold text-purple-800">
+                    Question {qi + 1} 🎯
+                  </h2>
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    setQuestions((prev) => prev.filter((_, idx) => idx !== qi))
-                  }
-                  className="text-red-500 hover:text-red-700 transition"
-                >
-                  <FiTrash2 size={20} />
-                </button>
-              </div>
-
-              {/* Question text */}
-              <input
-                type="text"
-                required
-                className="w-full border px-3 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400 outline-none"
-                placeholder="Enter question text"
-                value={q.text}
-                onChange={(e) => updateQuestionText(qi, e.target.value)}
-              />
-
-              {/* OPTIONS */}
-              <div>
-                <label className="font-semibold text-gray-700 block mb-1">
-                  Options
-                </label>
-                <div className="space-y-2">
-                  {q.options.map((opt, oi) => (
-                    <div key={oi} className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        required
-                        className="w-full border px-3 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400"
-                        placeholder={`Option ${oi + 1}`}
-                        value={opt}
-                        onChange={(e) =>
-                          updateOption(qi, oi, e.target.value)
-                        }
-                      />
-
-                      {q.options.length > 2 && (
-                        <button
-                          type="button"
-                          className="text-red-500 hover:text-red-700 px-2"
-                          onClick={() => removeOption(qi, oi)}
-                        >
-                          <FiTrash2 size={18} />
-                        </button>
-                      )}
-                    </div>
-                  ))}
+                  <motion.button
+                    whileHover={{ scale: 1.2 }}
+                    onClick={() =>
+                      setQuestions((prev) =>
+                        prev.filter((_, idx) => idx !== qi)
+                      )
+                    }
+                    className="text-red-500 hover:text-red-700 transition"
+                  >
+                    <FiTrash2 size={22} />
+                  </motion.button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => addOption(qi)}
-                  className="mt-2 text-purple-600 text-sm flex items-center gap-1 hover:underline"
-                >
-                  <FiPlusCircle /> Add option
-                </button>
-              </div>
-
-              {/* CORRECT ANSWER */}
-              <div>
-                <label className="font-semibold text-gray-700 block mb-1">
-                  Correct Answer
-                </label>
-                <select
-                  className="w-full border px-3 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400 outline-none"
-                  value={q.answerIndex}
-                  onChange={(e) => {
-                    const copy = [...questions];
-                    copy[qi].answerIndex = Number(e.target.value);
-                    setQuestions(copy);
-                  }}
-                >
-                  {q.options.map((_, oi) => (
-                    <option key={oi} value={oi}>
-                      Option {oi + 1}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* MARKS */}
-              <div>
-                <label className="font-semibold text-gray-700 block mb-1">
-                  Marks
-                </label>
+                {/* Question Text */}
                 <input
-                  type="number"
-                  min="1"
-                  className="w-full border px-3 py-2 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400 outline-none"
-                  value={q.marks}
-                  onChange={(e) => {
-                    const copy = [...questions];
-                    copy[qi].marks = Number(e.target.value);
-                    setQuestions(copy);
-                  }}
+                  type="text"
+                  required
+                  className="w-full border px-4 py-3 rounded-xl shadow focus:ring-2 focus:ring-purple-400 outline-none bg-purple-50"
+                  placeholder="Enter your question here"
+                  value={q.text}
+                  onChange={(e) => updateQuestionText(qi, e.target.value)}
                 />
-              </div>
-            </motion.div>
-          ))}
+
+                {/* OPTIONS */}
+                <div>
+                  <label className="font-semibold text-pink-700 block mb-2">
+                    🧩 Options
+                  </label>
+                  <div className="space-y-3">
+                    {q.options.map((opt, oi) => (
+                      <div key={oi} className="flex items-center gap-3">
+                        <input
+                          type="text"
+                          required
+                          className="w-full border px-4 py-3 rounded-xl shadow focus:ring-2 focus:ring-pink-400 bg-pink-50"
+                          placeholder={`Option ${oi + 1}`}
+                          value={opt}
+                          onChange={(e) =>
+                            updateOption(qi, oi, e.target.value)
+                          }
+                        />
+
+                        {/* Remove Option */}
+                        {q.options.length > 2 && (
+                          <motion.button
+                            whileHover={{ scale: 1.2 }}
+                            className="text-red-500 hover:text-red-700"
+                            onClick={() => removeOption(qi, oi)}
+                          >
+                            <FiTrash2 size={18} />
+                          </motion.button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Add Option */}
+                  <button
+                    type="button"
+                    onClick={() => addOption(qi)}
+                    className="mt-2 text-purple-700 text-sm flex items-center gap-2 hover:underline"
+                  >
+                    <FiPlusCircle /> Add another option
+                  </button>
+                </div>
+
+                {/* Correct Answer */}
+                <div>
+                  <label className="font-semibold text-blue-700 block mb-2">
+                    ✔ Correct Answer
+                  </label>
+                  <select
+                    className="w-full border px-4 py-3 rounded-xl shadow focus:ring-2 focus:ring-blue-400 outline-none bg-blue-50"
+                    value={q.answerIndex}
+                    onChange={(e) => {
+                      const copy = [...questions];
+                      copy[qi].answerIndex = Number(e.target.value);
+                      setQuestions(copy);
+                    }}
+                  >
+                    {q.options.map((_, oi) => (
+                      <option key={oi} value={oi}>
+                        Option {oi + 1}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Marks */}
+                <div>
+                  <label className="font-semibold text-yellow-700 block mb-2">
+                    ⭐ Marks
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    className="w-full border px-4 py-3 rounded-xl shadow focus:ring-2 focus:ring-yellow-400 outline-none bg-yellow-50"
+                    value={q.marks}
+                    onChange={(e) => {
+                      const copy = [...questions];
+                      copy[qi].marks = Number(e.target.value);
+                      setQuestions(copy);
+                    }}
+                  />
+                </div>
+              </motion.div>
+            ))}
+          </AnimatePresence>
 
           {/* ADD QUESTION BUTTON */}
           <motion.button
             type="button"
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={addQuestion}
-            className="flex items-center gap-2 px-4 py-2 border rounded-lg bg-gray-100 hover:bg-gray-200 transition text-gray-700 shadow-sm"
+            className="flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-xl text-lg shadow-xl hover:bg-purple-700"
           >
-            <FiPlusCircle /> Add Question
+            <FiPlusCircle /> Add New Question
           </motion.button>
 
           {/* SUBMIT BUTTON */}
           <motion.button
             type="submit"
             disabled={busy}
-            whileHover={!busy ? { scale: 1.03 } : {}}
-            whileTap={!busy ? { scale: 0.97 } : {}}
-            className={`w-full py-3 rounded-lg text-white font-semibold shadow transition ${
+            whileHover={!busy ? { scale: 1.05 } : {}}
+            whileTap={!busy ? { scale: 0.95 } : {}}
+            className={`w-full py-3 rounded-xl text-white font-bold text-xl shadow-lg transition ${
               busy
                 ? "bg-purple-400 cursor-not-allowed"
-                : "bg-purple-600 hover:bg-purple-700"
+                : "bg-purple-700 hover:bg-purple-800"
             }`}
           >
-            {busy ? "Creating Quiz..." : "Create Quiz"}
+            {busy ? "Creating Quiz..." : "🚀 Create Quiz"}
           </motion.button>
         </motion.form>
       </motion.div>

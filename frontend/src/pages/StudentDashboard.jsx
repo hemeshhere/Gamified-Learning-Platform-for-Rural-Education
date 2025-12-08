@@ -6,6 +6,13 @@ import api from "../api/axios";
 import Navbar from "../components/common/Navbar";
 import { Link } from "react-router-dom";
 
+// ICONS
+import { FiBookOpen, FiBell } from "react-icons/fi";
+import { HiOutlineLightningBolt, HiOutlineBookOpen } from "react-icons/hi";
+import { MdEmojiEvents } from "react-icons/md";
+import { BsTrophyFill } from "react-icons/bs";
+import { AiFillStar } from "react-icons/ai";
+
 export default function StudentDashboard() {
   const rawUser = localStorage.getItem("user");
   const user = rawUser ? JSON.parse(rawUser) : null;
@@ -24,8 +31,8 @@ export default function StudentDashboard() {
 
   const { data: notifications = [] } = useQuery({
     queryKey: ["notifications"],
-    queryFn: async () => (await api.get("/notifications")).data,
     enabled: !!studentId,
+    queryFn: async () => (await api.get("/notifications")).data,
     refetchInterval: 20000,
   });
 
@@ -34,163 +41,188 @@ export default function StudentDashboard() {
   const badges = progress.badges ?? [];
   const completed = progress.completedLessons ?? [];
 
-  // XP Progress
   const xpIntoLevel = xp % 100;
-  const levelPct = Math.min(100, Math.max(0, Math.round((xpIntoLevel / 100) * 100)));
+  const pct = Math.round((xpIntoLevel / 100) * 100);
 
   return (
     <>
       <Navbar />
 
-      <main className="max-w-6xl mx-auto p-6">
-        {/* ======= TOP DASHBOARD CARD ======= */}
-        <motion.div
-          className="bg-white rounded-3xl shadow-xl p-6 border border-blue-100"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="flex justify-between items-start">
+      {/* BEAUTIFUL BACKGROUND */}
+      <div className="fixed inset-0 -z-10 bg-gradient-to-br from-pink-200 via-blue-200 to-purple-200 opacity-90"></div>
 
-            {/* GREETING + AVATAR */}
+      {/* FLOATING GAMIFIED ICONS */}
+      <motion.div
+        animate={{ y: [0, -15, 0] }}
+        transition={{ duration: 4, repeat: Infinity }}
+        className="fixed top-32 left-10 opacity-40 text-blue-700"
+      >
+        <HiOutlineLightningBolt size={80} />
+      </motion.div>
+
+      <motion.div
+        animate={{ y: [0, 15, 0] }}
+        transition={{ duration: 5, repeat: Infinity }}
+        className="fixed bottom-20 right-10 opacity-40 text-yellow-500"
+      >
+        <AiFillStar size={90} />
+      </motion.div>
+
+      <main className="max-w-6xl mx-auto p-6 pt-10">
+        {/* ============================= HERO SECTION ============================= */}
+        <motion.div
+          className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border-2 border-purple-300"
+          initial={{ opacity: 0, y: 35 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <div className="flex justify-between items-center">
+            {/* Greeting */}
             <div>
               <motion.h1
-                className="text-3xl font-bold flex items-center gap-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                className="text-5xl font-extrabold text-purple-800 flex items-center gap-3 drop-shadow"
               >
-                🎉 Hi, {user?.name || user?.email}!
+                <HiOutlineLightningBolt className="text-yellow-500" />
+                Hey, {user?.name || user?.email}!
               </motion.h1>
-              <p className="text-gray-600 text-sm">Keep shining ✨ You're doing awesome!</p>
+              <p className="text-gray-700 text-lg mt-2 font-medium">
+                Your learning journey is getting exciting! 🚀
+              </p>
             </div>
 
-            {/* LEVEL BADGE */}
+            {/* Level Badge with Glow */}
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ type: "spring", stiffness: 120 }}
-              className="bg-yellow-300 px-6 py-3 rounded-full text-center shadow-md border"
+              className="relative"
             >
-              <div className="text-xs font-bold">LEVEL</div>
-              <div className="text-3xl font-extrabold">{level}</div>
+              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-yellow-300 to-orange-400 shadow-lg flex flex-col justify-center items-center text-white border-4 border-white">
+                <div className="text-sm font-bold">LEVEL</div>
+                <div className="text-5xl font-extrabold">{level}</div>
+              </div>
+              <motion.div
+                className="absolute inset-0 rounded-full bg-yellow-300 opacity-40 blur-xl"
+                animate={{ scale: [1, 1.3, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              />
             </motion.div>
           </div>
 
-          {/* XP BAR */}
-          <div className="mt-5">
-            <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${levelPct}%` }}
-                transition={{ duration: 1.3, ease: "easeOut" }}
-                className="h-4 bg-gradient-to-r from-green-400 to-blue-500 rounded-full shadow-inner"
-              />
-            </div>
-            <div className="text-xs text-gray-600 mt-1">
-              {xpIntoLevel} / 100 XP ({levelPct}%)
-            </div>
+          {/* XP PROGRESS RING */}
+          <div className="flex justify-center mt-10">
+            <motion.div className="relative">
+              <svg width="160" height="160">
+                <circle
+                  cx="80"
+                  cy="80"
+                  r="70"
+                  stroke="#ddd"
+                  strokeWidth="15"
+                  fill="none"
+                />
+                <motion.circle
+                  cx="80"
+                  cy="80"
+                  r="70"
+                  stroke="url(#grad)"
+                  strokeWidth="15"
+                  fill="none"
+                  strokeLinecap="round"
+                  initial={{ strokeDasharray: "0 500" }}
+                  animate={{ strokeDasharray: `${pct * 4.4} 500` }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                />
+                <defs>
+                  <linearGradient id="grad">
+                    <stop offset="0%" stopColor="#34d399" />
+                    <stop offset="100%" stopColor="#6366f1" />
+                  </linearGradient>
+                </defs>
+              </svg>
+
+              <div className="absolute inset-0 flex flex-col justify-center items-center">
+                <div className="text-xl font-bold text-purple-700">{pct}%</div>
+                <div className="text-sm text-gray-600">XP Progress</div>
+              </div>
+            </motion.div>
           </div>
 
           {/* ACTION BUTTONS */}
-          <motion.div
-            className="mt-6 flex flex-wrap gap-3"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Link to="/lessons" className="px-5 py-2 bg-blue-600 text-white rounded-full shadow hover:scale-105 transition">
-              📘 Lessons
+          <div className="mt-8 flex flex-wrap gap-4 justify-center">
+            <Link to="/lessons" className="px-5 py-3 bg-blue-600 text-white rounded-full shadow-xl hover:scale-110 transition flex items-center gap-2">
+              <HiOutlineBookOpen /> Lessons
             </Link>
-            <Link to="/quiz" className="px-5 py-2 bg-pink-500 text-white rounded-full shadow hover:scale-105 transition">
-              🧠 Quizzes
+            <Link
+              to="/quiz"
+              className="px-5 py-3 bg-pink-600 text-white rounded-full shadow-xl hover:scale-110 transition flex items-center gap-2"
+            >
+              <FiBookOpen /> Quizzes
             </Link>
-            <Link to="/badges" className="px-5 py-2 bg-yellow-500 text-white rounded-full shadow hover:scale-105 transition">
-              🏅 Badges
+            <Link
+              to="/badges"
+              className="px-5 py-3 bg-yellow-500 text-white rounded-full shadow-xl hover:scale-110 transition flex items-center gap-2"
+            >
+              <MdEmojiEvents /> Badges
             </Link>
-            <Link to="/notifications" className="px-5 py-2 bg-gray-200 text-gray-800 rounded-full shadow hover:scale-105 transition">
-              🔔 Notifications ({notifications.length})
+            <Link
+              to="/notifications"
+              className="px-5 py-3 bg-gray-300 text-gray-900 rounded-full shadow-xl hover:scale-110 transition flex items-center gap-2"
+            >
+              <FiBell /> Notifications ({notifications.length})
             </Link>
-          </motion.div>
-
-          {/* RECENT ACTIVITY */}
-          <div className="mt-6">
-            <h3 className="text-lg font-bold mb-2">🕒 Recent Activity</h3>
-
-            {completed.length === 0 ? (
-              <p className="text-gray-500">No activity yet — start learning to earn XP! 💪</p>
-            ) : (
-              <ul className="space-y-3">
-                {completed.slice(0, 4).map((c, i) => (
-                  <motion.li
-                    key={i}
-                    className="bg-gray-50 p-3 rounded-xl shadow-sm flex justify-between"
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                  >
-                    <span>{c.title}</span>
-                    <span className="text-gray-600 text-xs">
-                      {new Date(c.completedAt).toLocaleDateString()}
-                    </span>
-                  </motion.li>
-                ))}
-              </ul>
-            )}
           </div>
         </motion.div>
 
-        {/* ======= BADGES + LESSONS ======= */}
-        <div className="grid md:grid-cols-3 gap-6 mt-8">
-
-          {/* BADGES CARD */}
+        {/* ============================= BADGES & LESSONS ============================= */}
+        <div className="grid md:grid-cols-3 gap-8 mt-12">
+          {/* BADGES */}
           <motion.div
-            className="bg-white p-6 rounded-3xl shadow-md border border-yellow-200"
-            initial={{ opacity: 0, y: 20 }}
+            className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border-2 border-yellow-200"
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h3 className="text-xl font-bold mb-3">🏆 Your Badges</h3>
+            <h3 className="text-2xl font-bold mb-4 flex items-center gap-2 text-yellow-600">
+              <BsTrophyFill /> Your Badges
+            </h3>
 
             {badges.length === 0 ? (
-              <p className="text-gray-500">No badges yet — go earn some! 🌟</p>
+              <p className="text-gray-600">Earn badges by completing lessons! 🌟</p>
             ) : (
               <div className="grid grid-cols-3 gap-4">
                 {badges.map((b, i) => (
-                  <motion.div
-                    key={i}
-                    whileHover={{ scale: 1.15, rotate: 5 }}
-                    className="text-center"
-                  >
-                    <div className="w-14 h-14 bg-yellow-300 rounded-full flex items-center justify-center text-2xl shadow">
+                  <motion.div key={i} whileHover={{ scale: 1.1 }} className="text-center">
+                    <div className="w-16 h-16 bg-yellow-300 rounded-full flex items-center justify-center text-3xl shadow">
                       🥇
                     </div>
-                    <p className="text-xs mt-1 font-semibold">{b.name || b}</p>
+                    <p className="text-xs mt-2 font-semibold">{b.name || b}</p>
                   </motion.div>
                 ))}
               </div>
             )}
           </motion.div>
 
-          {/* LESSONS PREVIEW */}
+          {/* RECOMMENDED LESSONS */}
           <motion.div
-            className="bg-white p-6 rounded-3xl shadow-md md:col-span-2 border border-blue-200"
-            initial={{ opacity: 0, y: 20 }}
+            className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 shadow-xl border-2 border-blue-200 md:col-span-2"
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h3 className="text-xl font-bold mb-4">📚 Recommended Lessons</h3>
+            <h3 className="text-2xl font-bold mb-4 text-blue-700 flex items-center gap-2">
+              <FiBookOpen /> Recommended Lessons
+            </h3>
 
             {lessons.length === 0 ? (
-              <p className="text-gray-500">No lessons available yet.</p>
+              <p className="text-gray-600">No lessons available yet.</p>
             ) : (
-              <div className="grid md:grid-cols-2 gap-4">
+              <div className="grid md:grid-cols-2 gap-6">
                 {lessons.slice(0, 4).map((lesson, i) => (
                   <motion.div
                     key={i}
                     whileHover={{ scale: 1.05 }}
-                    className="p-4 border rounded-2xl shadow-sm hover:shadow-lg transition"
+                    className="p-5 rounded-2xl border shadow-md bg-white/70 backdrop-blur-md transition"
                   >
-                    <div className="font-bold text-lg">📘 {lesson.title}</div>
+                    <div className="font-bold text-lg text-blue-700">{lesson.title}</div>
                     <p className="text-sm text-gray-600">
-                      {lesson.description?.slice(0, 70)}...
+                      {lesson.description?.slice(0, 80)}...
                     </p>
 
                     <Link
