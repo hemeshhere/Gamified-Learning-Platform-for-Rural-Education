@@ -6,30 +6,78 @@ const Attempt = require('../models/attemptModel');
 const Progress = require('../models/progressModel');
 const User = require('../models/userModel');
 const { requireAuth } = require('../middlewares/authMiddleware');
-const { requireRole } = require('../middlewares/rolesMiddleware'); // if you used requireRole; otherwise use isTeacherOrAdmin for create
+const { requireRole } = require('../middlewares/rolesMiddleware');
 const { QUIZ_MAX_XP } = require('../utils/xpUtils');
 
-// -- teacher/admin create quiz (if desired)
-router.post('/',requireAuth,requireRole(['teacher', 'admin']),async (req, res, next) => {
-    try {
-      const quiz = await Quiz.create(req.body);
-      res.status(201).json(quiz);
-    } catch (err) {
-      next(err);
-    }
+// -----------------------------------------------------
+// CREATE QUIZ (Teacher/Admin)
+// -----------------------------------------------------
+router.post('/', requireAuth, requireRole(['teacher', 'admin']), async (req, res, next) => {
+  try {
+    const quiz = await Quiz.create(req.body);
+    res.status(201).json(quiz);
+  } catch (err) {
+    next(err);
+  }
 });
 
+// -----------------------------------------------------
+// GET ALL QUIZZES
+// -----------------------------------------------------
+router.get('/', requireAuth, async (req, res, next) => {
+  try {
+    const quizzes = await Quiz.find().sort({ createdAt: -1 });
+    res.json(quizzes);
+  } catch (err) {
+    next(err);
+  }
+});
 
-// -- student submits attempt & receives XP based on score
+// -----------------------------------------------------
+// ⭐ GET QUIZ BY ID (Needed by QuizAttempt.jsx)
+// -----------------------------------------------------
+router.get('/:quizId', requireAuth, async (req, res, next) => {
+  try {
+    const quiz = await Quiz.findById(req.params.quizId);
+
+    if (!quiz) {
+      return res.status(404).json({ error: 'Quiz not found' });
+    }
+
+    res.json(quiz);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// -----------------------------------------------------
+// STUDENT SUBMITS QUIZ ATTEMPT
+// -----------------------------------------------------
 router.post('/attempt/:quizId', requireAuth, async (req, res, next) => {
   try {
     const quizId = req.params.quizId;
     const { answers } = req.body;
 
+    // 🚫 1. BLOCK MULTIPLE ATTEMPTS
+    const alreadyAttempted = await Attempt.findOne({
+      student: req.user.id,
+      quiz: quizId
+    });
+
+    if (alreadyAttempted) {
+      return res.status(400).json({
+        error: "You have already submitted this quiz.",
+        attemptId: alreadyAttempted._id,
+        score: alreadyAttempted.score,
+        xpEarned: alreadyAttempted.xpEarned
+      });
+    }
+
+    // ✔ 2. FIND QUIZ
     const quiz = await Quiz.findById(quizId);
     if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
 
-    // build map of questions
+    // ✔ 3. SCORE CALCULATION
     const qmap = new Map();
     quiz.questions.forEach(q => qmap.set(String(q._id), q));
 
@@ -43,19 +91,15 @@ router.post('/attempt/:quizId', requireAuth, async (req, res, next) => {
       const marks = Number(q.marks || 1);
       totalMarks += marks;
 
-      if (q.type === 'mcq') {
-        if (typeof q.answerIndex !== 'undefined' && q.answerIndex === ans.answer) {
-          score += marks;
-        }
+      if (q.type === 'mcq' && q.answerIndex === ans.answer) {
+        score += marks;
       }
     }
 
-    // xp calculation
-    const xpEarned = totalMarks > 0
-      ? Math.round((score / totalMarks) * QUIZ_MAX_XP)
-      : 0;
+    const xpEarned =
+      totalMarks > 0 ? Math.round((score / totalMarks) * QUIZ_MAX_XP) : 0;
 
-    // save attempt
+    // ✔ 4. SAVE NEW ATTEMPT
     const attempt = await Attempt.create({
       student: req.user.id,
       quiz: quizId,
@@ -64,7 +108,7 @@ router.post('/attempt/:quizId', requireAuth, async (req, res, next) => {
       xpEarned
     });
 
-    // update progress
+    // ✔ 5. UPDATE PROGRESS
     let prog = await Progress.findOne({ student: req.user.id });
     if (!prog) {
       prog = new Progress({
@@ -80,29 +124,28 @@ router.post('/attempt/:quizId', requireAuth, async (req, res, next) => {
     prog.level = Math.floor(prog.xp / 100) + 1;
     await prog.save();
 
-    // update user xp + level
     await User.findByIdAndUpdate(req.user.id, {
       xp: prog.xp,
       level: prog.level
     });
 
-    // BADGE ENGINE INTEGRATION HERE
-    const badgeEngine = require('../services/badgeEngineService');
+    // ✔ 6. BADGE ENGINE
+    const badgeEngine = require('../services/badgeEngineServices');
     const newBadges = await badgeEngine.checkAndAwardBadges(req.user.id, {
       quizScore: score,
-      totalMarks: totalMarks
+      totalMarks
     });
 
-    // response
+    // ✔ 7. RESPONSE
     res.json({
-      message: "Attempt recorded",
+      message: 'Attempt recorded',
       score,
       totalMarks,
       xpEarned,
       attemptId: attempt._id,
       newXp: prog.xp,
       newLevel: prog.level,
-      newBadges   // ⬅️ include awarded badges
+      newBadges
     });
 
   } catch (err) {
@@ -111,13 +154,19 @@ router.post('/attempt/:quizId', requireAuth, async (req, res, next) => {
 });
 
 
-
-// optional: list attempts for current user
-router.get('/attempts', requireAuth, async (req,res,next) => {
+// -----------------------------------------------------
+// GET ALL ATTEMPTS FOR CURRENT STUDENT
+// -----------------------------------------------------
+router.get('/attempts', requireAuth, async (req, res, next) => {
   try {
-    const attempts = await Attempt.find({ student: req.user.id }).populate('quiz','title');
+    const attempts = await Attempt.find({ student: req.user.id }).populate(
+      'quiz',
+      'title'
+    );
     res.json(attempts);
-  } catch (err){ next(err); }
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

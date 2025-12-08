@@ -6,7 +6,7 @@ const notificationSchema = new mongoose.Schema({
   title: String,
   body: String,
   meta: Object,
-  sentAt: Date,
+  sentAt: { type: Date, default: Date.now },
   read: { type:Boolean, default:false }
 });
 
