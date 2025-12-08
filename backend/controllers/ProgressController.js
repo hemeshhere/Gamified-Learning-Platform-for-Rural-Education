@@ -103,14 +103,29 @@ router.post('/complete', requireAuth, async (req, res, next) => {
 });
 
 // GET progress (existing)
+// GET progress (auto-create if not exists)
 router.get('/:studentId', requireAuth, async (req, res, next) => {
   try {
-    const prog = await Progress.findOne({ student: req.params.studentId }).populate('lessonsCompleted','title fileUrl');
-    if (!prog) return res.status(404).json({ error: 'Progress not found' });
+    let prog = await Progress.findOne({ student: req.params.studentId })
+      .populate('lessonsCompleted', 'title fileUrl');
+
+    // If student has no progress, create a fresh record
+    if (!prog) {
+      prog = await Progress.create({
+        student: req.params.studentId,
+        lessonsCompleted: [],
+        xp: 0,
+        level: 1,
+        processedOpIds: []
+      });
+    }
+
     res.json(prog);
+
   } catch (err) {
     next(err);
   }
 });
+
 
 module.exports = router;

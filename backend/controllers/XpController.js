@@ -3,26 +3,41 @@ const router = express.Router();
 
 const Progress = require('../models/progressModel');
 const User = require('../models/userModel');
+const Lesson = require('../models/lessonModel');
 const { requireAuth } = require('../middlewares/authMiddleware');
-const { requireRole } = require('../middlewares/rolesMiddleware'); 
-// const { isTeacherOrAdmin } = require('../middlewares/roles');  // If you prefer this
-
+const { requireRole } = require('../middlewares/rolesMiddleware');
 const { calculateLevel } = require('../utils/xpUtils');
 
-// Add XP route
+// ADD XP using student email + lesson title
 router.post('/add', requireAuth, requireRole(['teacher', 'admin']), async (req, res, next) => {
   try {
-    const { studentId, xp } = req.body;
+    const { studentEmail, lessonTitle, xpEarned } = req.body;
 
-    if (!studentId || typeof xp === 'undefined') {
-      return res.status(400).json({ error: 'studentId and xp required' });
+    if (!studentEmail) {
+      return res.status(400).json({ error: "studentEmail is required" });
     }
 
-    let prog = await Progress.findOne({ student: studentId });
+    // 1️⃣ Find student by email
+    const student = await User.findOne({ email: studentEmail });
+    if (!student) {
+      return res.status(404).json({ error: "Student not found" });
+    }
+
+    // 2️⃣ If lesson title provided, find the lesson
+    let lesson = null;
+    if (lessonTitle) {
+      lesson = await Lesson.findOne({ title: lessonTitle });
+      if (!lesson) {
+        return res.status(404).json({ error: "Lesson not found" });
+      }
+    }
+
+    // 3️⃣ Get or create progress document
+    let prog = await Progress.findOne({ student: student._id });
 
     if (!prog) {
       prog = new Progress({
-        student: studentId,
+        student: student._id,
         lessonsCompleted: [],
         xp: 0,
         level: 1,
@@ -30,22 +45,35 @@ router.post('/add', requireAuth, requireRole(['teacher', 'admin']), async (req, 
       });
     }
 
-    prog.xp += Number(xp);
+    // 4️⃣ Add lesson to completed list (if provided)
+    if (lesson && !prog.lessonsCompleted.includes(lesson._id)) {
+      prog.lessonsCompleted.push(lesson._id);
+    }
+
+    // 5️⃣ Add XP
+    const xpToAdd = Number(xpEarned) || 10;
+    prog.xp += xpToAdd;
     prog.level = calculateLevel(prog.xp);
 
     await prog.save();
-    await User.findByIdAndUpdate(studentId, { xp: prog.xp, level: prog.level });  
-    const badgeEngine = require('../services/badgeEngineServices');
-    const newBadges = await badgeEngine.checkAndAwardBadges(studentId);
 
-    res.json({
-      message: 'XP added',
-      studentId,
+    // 6️⃣ Update user xp & level
+    await User.findByIdAndUpdate(student._id, {
+      xp: prog.xp,
+      level: prog.level
+    });
+
+    // 7️⃣ Award badges
+    const badgeEngine = require('../services/badgeEngineServices');
+    const newBadges = await badgeEngine.checkAndAwardBadges(student._id);
+
+    return res.json({
+      message: "XP added successfully",
+      student: student.email,
       xp: prog.xp,
       level: prog.level,
       newBadges
     });
-
 
   } catch (err) {
     next(err);

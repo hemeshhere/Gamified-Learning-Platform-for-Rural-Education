@@ -1,35 +1,75 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-function App() {
-  const [count, setCount] = useState(0)
+import ProtectedRoute from "./components/common/ProtectedRoute";
+import ProtectedElement from "./components/common/ProtectedElement";
+import RoleRedirect from "./components/common/RoleRedirect";
 
+// Auth
+import Login from "./components/auth/Login";
+import Register from "./components/auth/Register";
+import GlobalLoader from "./components/common/GlobalLoader";
+
+// Student Pages
+import StudentDashboard from "./pages/StudentDashboard";
+import LessonsList from "./components/lessons/LessonsList";
+import LessonViewer from "./components/lessons/LessonViewer";
+import NotificationsPage from "./pages/NotificationsPage";
+import ProgressPage from "./pages/ProgressPage";
+import BadgeGallery from "./pages/BadgeGallery";
+import QuizList from "./components/quiz/QuizList";
+import QuizAttempt from "./components/quiz/QuizAttempt";
+
+// Teacher Pages
+import TeacherDashboard from "./pages/TeacherDashboard";
+import LessonUpload from "./pages/LessonUpload";
+import QuizCreate from "./pages/QuizCreate";
+import TeacherAddXP from "./pages/TeacherAddXP";
+import TeacherSendNotification from "./pages/TeacherSendNotification";
+
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <BrowserRouter>
+      <GlobalLoader />
 
-export default App
+      <Routes>
+
+        {/* PUBLIC ROUTES */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* ROOT REDIRECT BASED ON ROLE */}
+        <Route
+          path="/"
+          element={
+            <ProtectedElement>
+              <RoleRedirect />
+            </ProtectedElement>
+          }
+        />
+
+        {/* STUDENT ROUTES */}
+        <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+          <Route path="/student" element={<StudentDashboard />} />
+          <Route path="/lessons" element={<LessonsList />} />
+          <Route path="/lessons/:id" element={<LessonViewer />} />
+          <Route path="/quiz" element={<QuizList />} />
+          <Route path="/quiz/:quizId" element={<QuizAttempt />} />
+          <Route path="/notifications" element={<NotificationsPage />} />
+          <Route path="/progress" element={<ProgressPage />} />
+          <Route path="/badges" element={<BadgeGallery />} />
+        </Route>
+
+        {/* TEACHER ROUTES */}
+        <Route element={<ProtectedRoute allowedRoles={["teacher", "admin"]} />}>
+          <Route path="/teacher" element={<TeacherDashboard />} />
+          <Route path="/teacher/create-lesson" element={<LessonUpload />} />
+          <Route path="/teacher/create-quiz" element={<QuizCreate />} />
+          <Route path="/teacher/add-xp" element={<TeacherAddXP />} />
+          <Route path="/teacher/send-notification" element={<TeacherSendNotification />} />
+        </Route>
+
+      </Routes>
+    </BrowserRouter>
+  );
+}
