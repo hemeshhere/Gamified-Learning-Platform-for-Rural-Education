@@ -1,11 +1,19 @@
-import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../api/axios";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Navbar from "../common/Navbar";
+import { FiTrash2 } from "react-icons/fi";
 
 export default function LessonsList() {
+  const rawUser = localStorage.getItem("user");
+  const user = rawUser ? JSON.parse(rawUser) : null;
+  const isTeacher = user?.role === "teacher" || user?.role === "admin";
+
+  const queryClient = useQueryClient();
+  const [confirmDelete, setConfirmDelete] = useState(null); // stores lessonId to delete
+
   const {
     data: lessons = [],
     isLoading,
@@ -15,6 +23,17 @@ export default function LessonsList() {
     queryFn: async () => {
       const res = await api.get("/lessons");
       return res.data;
+    },
+  });
+
+  // DELETE LESSON MUTATION
+  const deleteLessonMutation = useMutation({
+    mutationFn: async (id) => {
+      return api.delete(`/lessons/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(["lessons"]);
+      setConfirmDelete(null);
     },
   });
 
@@ -63,8 +82,18 @@ export default function LessonsList() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.05 }}
               whileHover={{ scale: 1.05 }}
-              className="bg-white shadow-lg rounded-2xl p-5 border border-blue-200 hover:shadow-xl transition transform"
+              className="relative bg-white shadow-lg rounded-2xl p-5 border border-blue-200 hover:shadow-xl transition transform"
             >
+              {/* DELETE BUTTON (Teacher Only) */}
+              {isTeacher && (
+                <button
+                  onClick={() => setConfirmDelete(lesson)}
+                  className="absolute top-3 right-3 text-red-500 hover:text-red-700"
+                >
+                  <FiTrash2 size={20} />
+                </button>
+              )}
+
               {/* Title */}
               <h2 className="text-xl font-semibold text-gray-800 mb-2 flex items-center gap-2">
                 📚 {lesson.title}
@@ -109,6 +138,52 @@ export default function LessonsList() {
           ))}
         </div>
       </div>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      <AnimatePresence>
+        {confirmDelete && (
+          <motion.div
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white p-6 rounded-2xl shadow-xl w-80 text-center"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+            >
+              <h3 className="text-lg font-bold mb-2">Delete Lesson?</h3>
+              <p className="text-gray-600 mb-4">
+                Are you sure you want to delete{" "}
+                <span className="font-semibold">
+                  "{confirmDelete.title}"
+                </span>
+                ?
+              </p>
+
+              <div className="flex justify-center gap-3">
+                <button
+                  onClick={() => setConfirmDelete(null)}
+                  className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={() =>
+                    deleteLessonMutation.mutate(confirmDelete._id)
+                  }
+                  className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700"
+                >
+                  Delete
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

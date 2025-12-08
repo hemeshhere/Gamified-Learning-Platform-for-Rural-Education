@@ -34,6 +34,8 @@ const XpController = require('./controllers/XpController');
 const QuizController = require('./controllers/QuizController');
 const NotificationsController = require('./controllers/NotificationsController');
 const SyncController = require('./controllers/SyncController');
+const UserController = require("./controllers/userController");
+
 
 // REGISTER ROUTES
 app.use('/api/auth', AuthController);
@@ -43,7 +45,7 @@ app.use('/api/xp', XpController);
 app.use('/api/quiz', QuizController);
 app.use('/api/notifications', NotificationsController);
 app.use('/api/sync', SyncController);
-
+app.use("/api/users", UserController);
 // BASE ROUTE
 app.get('/', (req, res) => {
   res.send("🚀 Gamified Learning Platform API is Running");

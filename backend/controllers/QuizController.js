@@ -50,6 +50,23 @@ router.get('/:quizId', requireAuth, async (req, res, next) => {
   }
 });
 
+// DELETE QUIZ (teacher/admin)
+router.delete('/:quizId', requireAuth, requireRole(['teacher','admin']), async (req, res, next) => {
+  try {
+    const deleted = await Quiz.findByIdAndDelete(req.params.quizId);
+
+    if (!deleted) {
+      return res.status(404).json({ error: "Quiz not found" });
+    }
+
+    res.json({ message: "Quiz deleted successfully" });
+
+  } catch (err) {
+    next(err);
+  }
+});
+
+
 // -----------------------------------------------------
 // STUDENT SUBMITS QUIZ ATTEMPT
 // -----------------------------------------------------
