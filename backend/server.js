@@ -9,7 +9,7 @@ const errorHandler = require('./middlewares/errorHandlerMiddleware');
 // ========== CORS CONFIG ==========
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://gamified-learning-platform-for-rura-steel.vercel.app"
+  "gamified-learning-platform-for-rural-education-1za125yui.vercel.app"
 ];
 
 app.use(cors({
