@@ -30,9 +30,7 @@ export default function ChatScreen() {
 
   const bottomRef = useRef(null);
 
-  // ============================
   // LOAD PREVIOUS MESSAGES
-  // ============================
   useEffect(() => {
     if (!chatPartnerId) return;
 
@@ -44,9 +42,7 @@ export default function ChatScreen() {
     load();
   }, [chatPartnerId]);
 
-  // ============================
   // SOCKET REAL-TIME CHAT
-  // ============================
   useEffect(() => {
     // Join user-specific room
     socket.emit("join-room", userId);
@@ -71,9 +67,7 @@ export default function ChatScreen() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // ============================
   // SEND MESSAGE
-  // ============================
   const sendMessage = async () => {
     if (!text.trim()) return;
 
@@ -92,9 +86,7 @@ export default function ChatScreen() {
     setText("");
   };
 
-  // ============================
   // UI
-  // ============================
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-100 via-pink-100 to-purple-100">
 

@@ -15,14 +15,14 @@ const processQueue = (error, token = null) => {
   pendingRequests = [];
 };
 
-// ========== REQUEST INTERCEPTOR ==========
+// REQUEST INTERCEPTOR
 api.interceptors.request.use((config) => {
   const accessToken = localStorage.getItem('accessToken');
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
   return config;
 });
 
-// ========== RESPONSE INTERCEPTOR ==========
+// RESPONSE INTERCEPTOR
 api.interceptors.response.use(
   res => res,
   async err => {

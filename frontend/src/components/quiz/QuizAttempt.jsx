@@ -1,4 +1,3 @@
-// src/components/quiz/QuizAttempt.jsx
 import React, { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -24,18 +23,18 @@ export default function QuizAttempt() {
   const [xpEarned, setXpEarned] = useState(null);
   const [newBadges, setNewBadges] = useState([]);
 
-  /* -------------------- FETCH QUIZ DATA -------------------- */
+  /*  FETCH QUIZ DATA  */
   const { data: quiz, isLoading, error } = useQuery({
     queryKey: ["quiz", quizId],
     queryFn: async () => (await api.get(`/quiz/${quizId}`)).data,
   });
 
-  /* -------------------- UPDATE ANSWER -------------------- */
+  /*  UPDATE ANSWER  */
   const updateAnswer = (questionId, index) => {
     setAnswers((prev) => ({ ...prev, [questionId]: index }));
   };
 
-  /* -------------------- SUBMIT QUIZ -------------------- */
+  /*  SUBMIT QUIZ  */
   const submitQuiz = async () => {
     setSubmitting(true);
     try {
@@ -73,14 +72,14 @@ export default function QuizAttempt() {
     }
   };
 
-  /* -------------------- LOADING / ERROR -------------------- */
+  /*  LOADING / ERROR  */
   if (isLoading)
     return <div className="text-center p-6 text-purple-700 text-xl">Loading quiz...</div>;
 
   if (error || !quiz)
     return <div className="text-center p-6 text-red-600">Failed to load quiz.</div>;
 
-  /* -------------------- ALREADY SUBMITTED -------------------- */
+  /*  ALREADY SUBMITTED  */
   if (result?.alreadySubmitted) {
     return (
       <>
@@ -118,10 +117,10 @@ export default function QuizAttempt() {
     );
   }
 
-  /* -------------------- SHOW RESULT -------------------- */
+  /*  SHOW RESULT  */
   if (result) return <QuizResult result={result} />;
 
-  /* -------------------- SHOW QUIZ TO ATTEMPT -------------------- */
+  /*  SHOW QUIZ TO ATTEMPT  */
   return (
     <>
       <Navbar />

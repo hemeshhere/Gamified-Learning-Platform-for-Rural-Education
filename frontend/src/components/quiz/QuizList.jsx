@@ -20,7 +20,7 @@ export default function QuizList() {
     <>
       <Navbar />
 
-      {/* 🌈 Animated Gradient Background */}
+      {/*  Animated Gradient Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-yellow-200 via-purple-200 to-pink-200 opacity-90"></div>
 
       {/* Floating Icons */}
@@ -40,7 +40,7 @@ export default function QuizList() {
         <FiStar size={70} />
       </motion.div>
 
-      {/* ---------------------- MAIN ---------------------- */}
+      {/*  MAIN  */}
       <div className="max-w-5xl mx-auto p-6 mt-12">
         <motion.h1
           initial={{ opacity: 0, y: -10 }}
@@ -71,7 +71,7 @@ export default function QuizList() {
           </div>
         )}
 
-        {/* ---------------------- QUIZ GRID ---------------------- */}
+        {/*  QUIZ GRID  */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

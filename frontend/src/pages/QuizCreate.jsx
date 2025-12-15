@@ -19,7 +19,7 @@ export default function QuizCreate() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
-  /* --------------------------- ADD QUESTION --------------------------- */
+  /* ADD QUESTION */
   const addQuestion = () => {
     setQuestions((prev) => [
       ...prev,
@@ -32,7 +32,7 @@ export default function QuizCreate() {
     ]);
   };
 
-  /* --------------------------- UPDATE QUESTION --------------------------- */
+  /* UPDATE QUESTION */
   const updateQuestionText = (i, value) => {
     const copy = [...questions];
     copy[i].text = value;
@@ -59,7 +59,7 @@ export default function QuizCreate() {
     }
   };
 
-  /* --------------------------- SUBMIT QUIZ --------------------------- */
+  /* SUBMIT QUIZ */
   const submit = async (e) => {
     e.preventDefault();
     setBusy(true);
@@ -82,7 +82,7 @@ export default function QuizCreate() {
     <>
       <Navbar />
 
-      {/* ---------------------- Animated Background ---------------------- */}
+      {/* Animated Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-yellow-200 via-purple-200 to-pink-200 opacity-90"></div>
 
       {/* Floating Icons */}
@@ -102,7 +102,7 @@ export default function QuizCreate() {
         <FiStar size={75} />
       </motion.div>
 
-      {/* ---------------------- MAIN CONTENT ---------------------- */}
+      {/* MAIN CONTENT */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ export default function QuizCreate() {
           📝 Create New Quiz
         </h1>
 
-        {/* ---------------------- Status Message ---------------------- */}
+        {/* Status Message */}
         {message && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -127,7 +127,7 @@ export default function QuizCreate() {
           </motion.div>
         )}
 
-        {/* ---------------------- FORM ---------------------- */}
+        {/* FORM */}
         <motion.form
           onSubmit={submit}
           initial={{ opacity: 0 }}
@@ -150,7 +150,7 @@ export default function QuizCreate() {
             />
           </div>
 
-          {/* ---------------------- QUESTIONS LIST ---------------------- */}
+          {/* QUESTIONS LIST */}
           <AnimatePresence>
             {questions.map((q, qi) => (
               <motion.div

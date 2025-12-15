@@ -50,7 +50,7 @@ export default function TeacherManageContent() {
     <>
       <Navbar />
 
-      {/* 🌈 Soft Gradient Background */}
+      {/*  Soft Gradient Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 opacity-80"></div>
 
       <div className="max-w-6xl mx-auto p-6">
@@ -62,7 +62,7 @@ export default function TeacherManageContent() {
           📚 Manage Lessons & Quizzes
         </motion.h1>
 
-        {/* ----------------- LESSONS ----------------- */}
+        {/* LESSONS */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -142,7 +142,7 @@ export default function TeacherManageContent() {
           )}
         </motion.div>
 
-        {/* ----------------- QUIZZES ----------------- */}
+        {/* QUIZZES */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -209,7 +209,7 @@ export default function TeacherManageContent() {
         </motion.div>
       </div>
 
-      {/* ----------------- DELETE MODAL ----------------- */}
+      {/* DELETE MODAL */}
       <AnimatePresence>
         {confirmDelete && (
           <motion.div

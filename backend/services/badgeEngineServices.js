@@ -14,9 +14,8 @@ module.exports.checkAndAwardBadges = async (studentId, context = {}) => {
   const quizScore = context.quizScore || null;
   const totalMarks = context.totalMarks || null;
 
-  //-----------------------------
   // LEVEL BADGES
-  //-----------------------------
+
   const levelBadges = [
     { level: 2, badge: "Beginner" },
     { level: 5, badge: "Intermediate" },
@@ -30,9 +29,8 @@ module.exports.checkAndAwardBadges = async (studentId, context = {}) => {
     }
   });
 
-  //-----------------------------
   // LESSON BADGES
-  //-----------------------------
+
   if (lessonsCount >= 1 && !already.has("First Lesson")) {
     earnedBadges.push("First Lesson");
   }
@@ -45,9 +43,8 @@ module.exports.checkAndAwardBadges = async (studentId, context = {}) => {
     earnedBadges.push("Dedicated Learner");
   }
 
-  //-----------------------------
   // QUIZ BADGES
-  //-----------------------------
+
   if (quizScore && totalMarks) {
     const percent = (quizScore / totalMarks) * 100;
 
@@ -60,9 +57,8 @@ module.exports.checkAndAwardBadges = async (studentId, context = {}) => {
     }
   }
 
-  //-----------------------------
   // SAVE BADGES (avoid duplicates)
-  //-----------------------------
+  
   if (earnedBadges.length > 0) {
     prog.badges.push(...earnedBadges);
     await prog.save();

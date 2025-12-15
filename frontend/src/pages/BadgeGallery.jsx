@@ -11,9 +11,8 @@ export default function BadgeGallery() {
   const user = rawUser ? JSON.parse(rawUser) : null;
   const studentId = user?.id || user?._id;
 
-  /* ----------------------------------------
-      FETCH FULL PROGRESS (same as Dashboard)
-  ---------------------------------------- */
+  
+  //  FETCH FULL PROGRESS (same as Dashboard)
   const { data: progress = {}, isLoading } = useQuery({
     queryKey: ["progress", studentId],
     enabled: !!studentId,

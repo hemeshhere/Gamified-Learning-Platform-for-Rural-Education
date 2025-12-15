@@ -8,7 +8,8 @@ const { requireRole } = require('../middlewares/rolesMiddleware');
 const { addXp, DEFAULT_LESSON_XP } = require('../utils/xpUtils');
 const badgeEngine = require('../services/badgeEngineServices');
 
-// ----- teacher/admin manual update -----
+// teacher/admin manual update 
+
 router.post('/', requireAuth, requireRole(['teacher','admin']), async (req, res, next) => {
   try {
     const { studentId, lessonId, xpEarned = DEFAULT_LESSON_XP, opId } = req.body;
@@ -51,9 +52,8 @@ router.post('/', requireAuth, requireRole(['teacher','admin']), async (req, res,
   }
 });
 
-// ----- student marks lesson complete (automatic XP awarding) -----
-// POST /api/progress/complete
-// body: { lessonId, opId(optional) }
+// student marks lesson complete (automatic XP awarding) 
+
 router.post('/complete', requireAuth, async (req, res, next) => {
   try {
     const studentId = req.user.id;

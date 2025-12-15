@@ -6,10 +6,8 @@ const User = require("../models/userModel");   // ✅ REQUIRED FIX
 const emailService = require("../services/emailServices");
 const { requireAuth, requireRole } = require("../middlewares/authMiddleware");
 
-// -------------------------------------------------------------
 // SEND NOTIFICATION (Teacher/Admin only)
-// -------------------------------------------------------------
-// Send notification (teacher/admin)
+
 router.post(
   "/",
   requireAuth,
@@ -22,7 +20,7 @@ router.post(
         return res.status(400).json({ error: "Title and body are required" });
       }
 
-      // ⭐ If userId is empty → broadcast to all students
+      // If userId is empty → broadcast to all students
       if (!userId || userId.trim() === "") {
         const students = await User.find({ role: "student" });
 
@@ -45,7 +43,8 @@ router.post(
         });
       }
 
-      // ⭐ Otherwise send to single user
+      // Otherwise send to single user
+
       const user = await User.findById(userId);
       if (!user) return res.status(404).json({ error: "User not found" });
 
@@ -65,9 +64,8 @@ router.post(
 );
 
 
-// -------------------------------------------------------------
 // GET NOTIFICATIONS FOR THE LOGGED-IN USER
-// -------------------------------------------------------------
+
 router.get("/", requireAuth, async (req, res, next) => {
   try {
     const notes = await Notification.find({ user: req.user.id }).sort({

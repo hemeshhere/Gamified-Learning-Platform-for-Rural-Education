@@ -6,9 +6,7 @@ const cors = require('cors');
 const app = express();
 const errorHandler = require('./middlewares/errorHandlerMiddleware');
 
-// ======================================================
-// ✅ CORS CONFIG
-// ======================================================
+// CORS CONFIG
 const allowedOrigins = [
   "http://localhost:5173",
   "https://gamified-learning-platform-for-rural-education-1za125yui.vercel.app"
@@ -16,7 +14,7 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // Allow mobile apps / Postman
+    if (!origin) return callback(null, true); // Allow mobile apps/Postman
     if (allowedOrigins.includes(origin)) return callback(null, true);
 
     console.log("❌ CORS BLOCKED:", origin);
@@ -27,39 +25,34 @@ app.use(cors({
 
 app.options("*", cors());
 
-// ======================================================
 // BODY PARSER
-// ======================================================
+
 app.use(express.json());
 
-// ======================================================
 // HEALTH CHECK
-// ======================================================
+
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", time: Date.now() });
 });
 
-// ======================================================
 // REQUEST LOGGER
-// ======================================================
+
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
 
-// ======================================================
 // MONGO CONNECTION
-// ======================================================
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("✅ Mongo connected"))
   .catch((err) => {
     console.error("❌ MongoDB error:", err);
     process.exit(1);
   });
+  
+// SOCKET.IO SETUP
 
-// ======================================================
-// SOCKET.IO SETUP — FIXES REAL-TIME CHAT
-// ======================================================
 const http = require("http");
 const { Server } = require("socket.io");
 
@@ -69,11 +62,11 @@ const io = new Server(server, {
   cors: { origin: allowedOrigins, credentials: true }
 });
 
-// 🔥 store userId → socket.id mapping
+// store userId → socket.id mapping
 const userSockets = {};
 
 io.on("connection", (socket) => {
-  console.log("🟢 Socket connected:", socket.id);
+  console.log("Socket connected:", socket.id);
 
   // When user joins
   socket.on("join-room", (userId) => {
@@ -95,9 +88,8 @@ io.on("connection", (socket) => {
   });
 });
 
-// ======================================================
 // ROUTES IMPORT
-// ======================================================
+
 const AuthController = require('./controllers/AuthController');
 const LessonsController = require('./controllers/LessonsController');
 const ProgressController = require('./controllers/ProgressController');
@@ -108,9 +100,8 @@ const SyncController = require('./controllers/SyncController');
 const UserController = require("./controllers/userController");
 const ChatController = require("./controllers/ChatController");
 
-// ======================================================
 // ROUTES REGISTER
-// ======================================================
+
 app.use('/api/auth', AuthController);
 app.use('/api/lessons', LessonsController);
 app.use('/api/progress', ProgressController);
@@ -121,20 +112,15 @@ app.use('/api/sync', SyncController);
 app.use("/api/users", UserController);
 app.use("/api/chat", ChatController);
 
-// ======================================================
 // ROOT
-// ======================================================
+
 app.get('/', (req, res) => {
   res.send("🚀 Gamified Learning Platform API is Running");
 });
 
-// ======================================================
 // GLOBAL ERROR HANDLER
-// ======================================================
-app.use(errorHandler);
 
-// ======================================================
+app.use(errorHandler);
 // START SERVER
-// ======================================================
 const PORT = process.env.PORT || 5010;
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

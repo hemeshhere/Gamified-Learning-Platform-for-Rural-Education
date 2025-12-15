@@ -1,5 +1,3 @@
-// middlewares/roles.js
-
 module.exports.requireRole = (roles = []) => {
   return (req, res, next) => {
     if (!req.user) {

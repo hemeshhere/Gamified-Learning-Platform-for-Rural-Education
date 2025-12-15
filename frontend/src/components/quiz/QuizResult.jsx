@@ -6,7 +6,7 @@ import { FiStar, FiAward } from "react-icons/fi";
 export default function QuizResult({ result }) {
   return (
     <>
-      {/* 🌈 Background */}
+      {/*  Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-purple-200 via-yellow-200 to-pink-200 opacity-90"></div>
 
       {/* Floating Icons */}
@@ -26,7 +26,7 @@ export default function QuizResult({ result }) {
         <FiAward size={70} />
       </motion.div>
 
-      {/* ---------------- MAIN RESULT CARD ---------------- */}
+      {/*  MAIN RESULT CARD  */}
       <motion.div
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}

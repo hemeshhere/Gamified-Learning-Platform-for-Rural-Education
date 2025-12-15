@@ -4,7 +4,7 @@ const badgeSchema = new mongoose.Schema({
   name: { type:String, required:true },
   description: String,
   iconUrl: String,
-  criteria: Object // simple criteria structure
+  criteria: Object 
 });
 
 module.exports = mongoose.model('Badge', badgeSchema);

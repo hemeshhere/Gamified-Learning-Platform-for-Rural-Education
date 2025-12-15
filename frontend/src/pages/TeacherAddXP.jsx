@@ -64,7 +64,7 @@ export default function TeacherAddXP() {
     <>
       <Navbar />
 
-      {/* 🌈 Vibrant Background */}
+      {/*  Vibrant Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 opacity-90"></div>
 
       {/* Floating XP Stars */}
@@ -84,7 +84,7 @@ export default function TeacherAddXP() {
         <FiBookOpen size={70} />
       </motion.div>
 
-      {/* 🌟 Main Content */}
+      {/*  Main Content */}
       <motion.div
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
@@ -105,7 +105,7 @@ export default function TeacherAddXP() {
           </motion.div>
         )}
 
-        {/* ---------------- FORM CARD ---------------- */}
+        {/* FORM CARD */}
         <form
           onSubmit={handleSubmit}
           className="bg-white/80 backdrop-blur-lg p-8 rounded-3xl shadow-2xl border-2 border-purple-200 space-y-6"
