@@ -70,7 +70,7 @@ export default function StudentDashboard() {
       </motion.div>
 
       <main className="max-w-6xl mx-auto p-6 pt-10">
-        {/* ============================= HERO SECTION ============================= */}
+        {/* HERO SECTION */}
         <motion.div
           className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border-2 border-purple-300"
           initial={{ opacity: 0, y: 35 }}
@@ -181,7 +181,7 @@ export default function StudentDashboard() {
           </div>
         </motion.div>
 
-        {/* ============================= BADGES & LESSONS ============================= */}
+        {/* BADGES & LESSONS */}
         <div className="grid md:grid-cols-3 gap-8 mt-12">
           {/* BADGES */}
           <motion.div

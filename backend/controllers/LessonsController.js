@@ -4,6 +4,7 @@ const Lesson = require('../models/lessonModel');
 const { requireAuth, requireRole } = require('../middlewares/authMiddleware');
 
 // CREATE LESSON (teacher/admin)
+
 router.post('/', requireAuth, requireRole(['teacher','admin']), async (req,res,next) => {
   try {
     const { title, description, fileUrl, videoUrl, language, grade } = req.body;
@@ -25,6 +26,7 @@ router.post('/', requireAuth, requireRole(['teacher','admin']), async (req,res,n
 });
 
 // GET ALL LESSONS (students + teachers)
+
 router.get('/', requireAuth, async (req,res,next) => {
   try {
     const filter = {};
@@ -42,6 +44,7 @@ router.get('/', requireAuth, async (req,res,next) => {
 
 
 // GET SINGLE LESSON BY ID (Needed for LessonViewer.jsx)
+
 router.get('/:id', requireAuth, async (req,res,next) => {
   try {
     const lesson = await Lesson.findById(req.params.id);
@@ -58,6 +61,7 @@ router.get('/:id', requireAuth, async (req,res,next) => {
 });
 
 // DELETE LESSON (teacher/admin)
+
 router.delete('/:id', requireAuth, requireRole(['teacher','admin']), async (req, res, next) => {
   try {
     const deleted = await Lesson.findByIdAndDelete(req.params.id);

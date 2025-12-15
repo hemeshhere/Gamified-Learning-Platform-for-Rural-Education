@@ -7,9 +7,7 @@ import XPPopup from "../common/XPPopup";
 import { motion } from "framer-motion";
 import { FiBookOpen, FiStar } from "react-icons/fi";
 
-/* -----------------------------------------------
-   Convert ANY YouTube URL → proper embed URL
------------------------------------------------- */
+/*    Convert ANY YouTube URL → proper embed URL  */
 function convertYoutubeUrl(url) {
   if (!url) return null;
 
@@ -40,13 +38,13 @@ export default function LessonViewer() {
 
   const [xpEarned, setXpEarned] = useState(null);
 
-  /* ---------------- Fetch Lesson ---------------- */
+  /* Fetch Lesson */
   const { data: lesson, isLoading, error } = useQuery({
     queryKey: ["lesson", id],
     queryFn: async () => (await api.get(`/lessons/${id}`)).data,
   });
 
-  /* ---------------- Fetch Progress ---------------- */
+  /* Fetch Progress */
   const { data: progress = {} } = useQuery({
     queryKey: ["progress", studentId],
     enabled: !!studentId,
@@ -56,7 +54,7 @@ export default function LessonViewer() {
   const completedLessons = progress?.lessonsCompleted?.map((l) => l._id) || [];
   const alreadyCompleted = completedLessons.includes(id);
 
-  /* ---------------- Mark Completed ---------------- */
+  /* Mark Completed */
   const markCompleted = async () => {
     try {
       const res = await api.post("/progress/complete", { lessonId: id });
@@ -73,7 +71,7 @@ export default function LessonViewer() {
     }
   };
 
-  /* ---------------- Loading & Error ---------------- */
+  /* Loading & Error */
   if (isLoading)
     return (
       <div className="p-6 text-center text-purple-600 text-xl">
@@ -94,7 +92,7 @@ export default function LessonViewer() {
     <>
       <Navbar />
 
-      {/* 🌈 Animated Gradient Background */}
+      {/*  Animated Gradient Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 opacity-90"></div>
 
       {/* Floating icons */}
@@ -130,7 +128,7 @@ export default function LessonViewer() {
 
         <p className="text-gray-700 mb-6 text-lg">{lesson.description}</p>
 
-        {/* ---------------- PDF Viewer ---------------- */}
+        {/* PDF Viewer */}
         {lesson.fileUrl && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -149,7 +147,7 @@ export default function LessonViewer() {
           </motion.div>
         )}
 
-        {/* ---------------- Video Viewer ---------------- */}
+        {/* Video Viewer */}
         {lesson.videoUrl && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -175,7 +173,7 @@ export default function LessonViewer() {
           </motion.div>
         )}
 
-        {/* ---------------- Mark Complete Button ---------------- */}
+        {/* Mark Complete Button */}
         <div className="mt-8">
           <motion.button
             whileHover={!alreadyCompleted ? { scale: 1.05 } : {}}

@@ -31,7 +31,7 @@ export default function LessonsList() {
     },
   });
 
-  /* ---------------- LOADING & ERROR ---------------- */
+  /* LOADING & ERROR */
   if (isLoading)
     return (
       <div className="p-6 text-center text-purple-600 text-xl">
@@ -46,7 +46,7 @@ export default function LessonsList() {
       </div>
     );
 
-  /* ---------------- EMPTY ---------------- */
+  /* EMPTY */
   if (lessons.length === 0)
     return (
       <>
@@ -62,7 +62,7 @@ export default function LessonsList() {
     <>
       <Navbar />
 
-      {/* 🌈 Animated Background */}
+      {/*  Animated Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-blue-200 via-yellow-200 to-pink-200 opacity-90"></div>
 
       {/* Floating Icons */}
@@ -82,7 +82,7 @@ export default function LessonsList() {
         <FiStar size={65} />
       </motion.div>
 
-      {/* ---------------- MAIN CONTENT ---------------- */}
+      {/* MAIN CONTENT */}
       <div className="max-w-6xl mx-auto p-6 mt-10">
         <motion.h1
           className="text-5xl font-extrabold text-purple-700 drop-shadow-sm flex items-center gap-3 mb-8"
@@ -159,7 +159,7 @@ export default function LessonsList() {
         </div>
       </div>
 
-      {/* ---------------- DELETE MODAL ---------------- */}
+      {/* DELETE MODAL */}
       <AnimatePresence>
         {confirmDelete && (
           <motion.div

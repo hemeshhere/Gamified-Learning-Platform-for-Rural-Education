@@ -6,7 +6,7 @@ const progressSchema = new mongoose.Schema({
   xp: { type:Number, default:0 },
   level: { type:Number, default:1 },
   badges: [String],
-  processedOpIds: [String] // for offline dedupe
+  processedOpIds: [String] 
 });
 
 module.exports = mongoose.model('Progress', progressSchema);

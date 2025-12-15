@@ -4,9 +4,7 @@ const ChatMessage = require("../models/ChatMessage");
 const User = require("../models/userModel");
 const { requireAuth } = require("../middlewares/authMiddleware");
 
-// ------------------------------
 // GET TEACHERS LIST (for students)
-// ------------------------------
 router.get("/teachers", requireAuth, async (req, res, next) => {
   try {
     const teachers = await User.find({ role: "teacher" }).select("name email _id");
@@ -16,9 +14,7 @@ router.get("/teachers", requireAuth, async (req, res, next) => {
   }
 });
 
-// ------------------------------
 // GET STUDENTS LIST (for teachers)
-// ------------------------------
 router.get("/students", requireAuth, async (req, res, next) => {
   try {
     const students = await User.find({ role: "student" }).select("name email _id");
@@ -28,9 +24,8 @@ router.get("/students", requireAuth, async (req, res, next) => {
   }
 });
 
-// ------------------------------
 // GET FULL CONVERSATION BETWEEN TWO USERS
-// ------------------------------
+
 router.get("/conversation/:userId", requireAuth, async (req, res, next) => {
   try {
     const me = String(req.user.id);
@@ -53,9 +48,8 @@ router.get("/conversation/:userId", requireAuth, async (req, res, next) => {
   }
 });
 
-// ------------------------------
 // SEND MESSAGE
-// ------------------------------
+
 router.post("/send", requireAuth, async (req, res, next) => {
   try {
     const { receiverId, message } = req.body;
@@ -71,6 +65,7 @@ router.post("/send", requireAuth, async (req, res, next) => {
     });
 
     // Important: format the message for frontend usage
+    
     const formattedMessage = {
       _id: msg._id,
       sender: String(msg.sender),

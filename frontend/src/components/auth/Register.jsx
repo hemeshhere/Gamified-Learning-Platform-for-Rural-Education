@@ -23,9 +23,7 @@ export default function Register() {
     validateField(field, value);
   };
 
-  // ------------------------------
   // VALIDATION RULES
-  // ------------------------------
   const validateField = (field, value) => {
     let msg = "";
 
@@ -54,9 +52,8 @@ export default function Register() {
     );
   };
 
-  // ------------------------------
   // FORM SUBMISSION
-  // ------------------------------
+
   const submit = async (e) => {
     e.preventDefault();
     setServerError("");
@@ -87,9 +84,7 @@ export default function Register() {
     }
   };
 
-  // ------------------------------
   // UI
-  // ------------------------------
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">

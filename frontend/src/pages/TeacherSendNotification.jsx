@@ -24,9 +24,7 @@ export default function TeacherSendNotification() {
   const [body, setBody] = useState("");
   const [message, setMessage] = useState("");
 
-  /* ---------------------------------------------------
-     AUTO-FILL EMAIL + FETCH USER ID
-  --------------------------------------------------- */
+  //AUTO-FILL EMAIL + FETCH USER ID
   useEffect(() => {
     if (prefilledEmail) {
       setStudentEmail(prefilledEmail);
@@ -38,9 +36,8 @@ export default function TeacherSendNotification() {
     }
   }, [prefilledEmail]);
 
-  /* ---------------------------------------------------
-     SEND NOTIFICATION
-  --------------------------------------------------- */
+  // SEND NOTIFICATION
+
   const mutation = useMutation({
     mutationFn: async (payload) => {
       const res = await api.post("/notifications", payload);
@@ -77,7 +74,7 @@ export default function TeacherSendNotification() {
     <>
       <Navbar />
 
-      {/* 🌈 Background */}
+      {/*  Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-yellow-200 via-pink-200 to-blue-200 opacity-90"></div>
 
       {/* Floating Icons */}
@@ -97,7 +94,7 @@ export default function TeacherSendNotification() {
         <FiMail size={70} />
       </motion.div>
 
-      {/* ---------------------- MAIN CARD ---------------------- */}
+      {/*  MAIN CARD  */}
       <motion.div
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}

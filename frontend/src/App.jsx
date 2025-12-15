@@ -56,7 +56,7 @@ export default function App() {
           }
         />
 
-        {/* ---------------- STUDENT ROUTES ---------------- */}
+        {/*  STUDENT ROUTES  */}
         <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
           <Route path="/student" element={<StudentDashboard />} />
           <Route path="/lessons" element={<LessonsList />} />
@@ -72,7 +72,7 @@ export default function App() {
           <Route path="/student/chat/:teacherId" element={<ChatRoom />} />
         </Route>
 
-        {/* ---------------- TEACHER ROUTES ---------------- */}
+        {/*  TEACHER ROUTES  */}
         <Route element={<ProtectedRoute allowedRoles={["teacher", "admin"]} />}>
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/teacher/create-lesson" element={<LessonUpload />} />

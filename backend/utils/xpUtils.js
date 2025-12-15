@@ -1,4 +1,3 @@
-// backend/utils/xp.js
 exports.calculateLevel = (xp) => {
   return Math.floor(xp / 100) + 1;
 };

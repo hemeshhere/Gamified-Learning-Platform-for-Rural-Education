@@ -74,7 +74,7 @@ export default function TeacherStudentList() {
     <>
       <Navbar />
 
-      {/* 🎉 Fun Background */}
+      {/*  Fun Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-blue-200 via-pink-200 to-yellow-200 opacity-80"></div>
 
       <motion.div
@@ -216,7 +216,7 @@ export default function TeacherStudentList() {
         </div>
       </motion.div>
 
-      {/* 🎉 Modal */}
+      {/*  Modal */}
       <AnimatePresence>
         {selectedStudent && (
           <motion.div

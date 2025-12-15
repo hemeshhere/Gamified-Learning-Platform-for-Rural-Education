@@ -9,9 +9,8 @@ const { requireAuth } = require('../middlewares/authMiddleware');
 const { requireRole } = require('../middlewares/rolesMiddleware');
 const { QUIZ_MAX_XP } = require('../utils/xpUtils');
 
-// -----------------------------------------------------
 // CREATE QUIZ (Teacher/Admin)
-// -----------------------------------------------------
+
 router.post('/', requireAuth, requireRole(['teacher', 'admin']), async (req, res, next) => {
   try {
     const quiz = await Quiz.create(req.body);
@@ -21,9 +20,8 @@ router.post('/', requireAuth, requireRole(['teacher', 'admin']), async (req, res
   }
 });
 
-// -----------------------------------------------------
 // GET ALL QUIZZES
-// -----------------------------------------------------
+
 router.get('/', requireAuth, async (req, res, next) => {
   try {
     const quizzes = await Quiz.find().sort({ createdAt: -1 });
@@ -33,9 +31,8 @@ router.get('/', requireAuth, async (req, res, next) => {
   }
 });
 
-// -----------------------------------------------------
-// ⭐ GET QUIZ BY ID (Needed by QuizAttempt.jsx)
-// -----------------------------------------------------
+// GET QUIZ BY ID (Needed by QuizAttempt.jsx)
+
 router.get('/:quizId', requireAuth, async (req, res, next) => {
   try {
     const quiz = await Quiz.findById(req.params.quizId);
@@ -67,15 +64,14 @@ router.delete('/:quizId', requireAuth, requireRole(['teacher','admin']), async (
 });
 
 
-// -----------------------------------------------------
 // STUDENT SUBMITS QUIZ ATTEMPT
-// -----------------------------------------------------
+
 router.post('/attempt/:quizId', requireAuth, async (req, res, next) => {
   try {
     const quizId = req.params.quizId;
     const { answers } = req.body;
 
-    // 🚫 1. BLOCK MULTIPLE ATTEMPTS
+    // 1. BLOCK MULTIPLE ATTEMPTS
     const alreadyAttempted = await Attempt.findOne({
       student: req.user.id,
       quiz: quizId
@@ -90,11 +86,11 @@ router.post('/attempt/:quizId', requireAuth, async (req, res, next) => {
       });
     }
 
-    // ✔ 2. FIND QUIZ
+    // 2. FIND QUIZ
     const quiz = await Quiz.findById(quizId);
     if (!quiz) return res.status(404).json({ error: 'Quiz not found' });
 
-    // ✔ 3. SCORE CALCULATION
+    // 3. SCORE CALCULATION
     const qmap = new Map();
     quiz.questions.forEach(q => qmap.set(String(q._id), q));
 
@@ -116,7 +112,7 @@ router.post('/attempt/:quizId', requireAuth, async (req, res, next) => {
     const xpEarned =
       totalMarks > 0 ? Math.round((score / totalMarks) * QUIZ_MAX_XP) : 0;
 
-    // ✔ 4. SAVE NEW ATTEMPT
+    // 4. SAVE NEW ATTEMPT
     const attempt = await Attempt.create({
       student: req.user.id,
       quiz: quizId,
@@ -125,7 +121,7 @@ router.post('/attempt/:quizId', requireAuth, async (req, res, next) => {
       xpEarned
     });
 
-    // ✔ 5. UPDATE PROGRESS
+    // 5. UPDATE PROGRESS
     let prog = await Progress.findOne({ student: req.user.id });
     if (!prog) {
       prog = new Progress({
@@ -146,14 +142,14 @@ router.post('/attempt/:quizId', requireAuth, async (req, res, next) => {
       level: prog.level
     });
 
-    // ✔ 6. BADGE ENGINE
+    // 6. BADGE ENGINE
     const badgeEngine = require('../services/badgeEngineServices');
     const newBadges = await badgeEngine.checkAndAwardBadges(req.user.id, {
       quizScore: score,
       totalMarks
     });
 
-    // ✔ 7. RESPONSE
+    // 7. RESPONSE
     res.json({
       message: 'Attempt recorded',
       score,
@@ -170,10 +166,8 @@ router.post('/attempt/:quizId', requireAuth, async (req, res, next) => {
   }
 });
 
-
-// -----------------------------------------------------
 // GET ALL ATTEMPTS FOR CURRENT STUDENT
-// -----------------------------------------------------
+
 router.get('/attempts', requireAuth, async (req, res, next) => {
   try {
     const attempts = await Attempt.find({ student: req.user.id }).populate(

@@ -51,7 +51,7 @@ export default function LessonUpload() {
     <>
       <Navbar />
 
-      {/* 🌈 Gradient Background */}
+      {/*  Gradient Background */}
       <div className="fixed inset-0 -z-10 bg-gradient-to-br from-blue-200 via-pink-200 to-yellow-200 opacity-90"></div>
 
       {/* Floating Icons */}
@@ -71,7 +71,7 @@ export default function LessonUpload() {
         <FiStar size={65} />
       </motion.div>
 
-      {/* ---------------- PAGE CONTENT ---------------- */}
+      {/* PAGE CONTENT */}
       <motion.div
         initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
@@ -96,7 +96,7 @@ export default function LessonUpload() {
           </motion.div>
         )}
 
-        {/* ---------------- FORM CARD ---------------- */}
+        {/* FORM CARD */}
         <motion.form
           onSubmit={submit}
           initial={{ opacity: 0 }}

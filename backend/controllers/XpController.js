@@ -17,13 +17,13 @@ router.post('/add', requireAuth, requireRole(['teacher', 'admin']), async (req, 
       return res.status(400).json({ error: "studentEmail is required" });
     }
 
-    // 1️⃣ Find student by email
+    // Find student by email
     const student = await User.findOne({ email: studentEmail });
     if (!student) {
       return res.status(404).json({ error: "Student not found" });
     }
 
-    // 2️⃣ If lesson title provided, find the lesson
+    // If lesson title provided, find the lesson
     let lesson = null;
     if (lessonTitle) {
       lesson = await Lesson.findOne({ title: lessonTitle });
@@ -32,7 +32,7 @@ router.post('/add', requireAuth, requireRole(['teacher', 'admin']), async (req, 
       }
     }
 
-    // 3️⃣ Get or create progress document
+    // Get or create progress document
     let prog = await Progress.findOne({ student: student._id });
 
     if (!prog) {
@@ -45,25 +45,25 @@ router.post('/add', requireAuth, requireRole(['teacher', 'admin']), async (req, 
       });
     }
 
-    // 4️⃣ Add lesson to completed list (if provided)
+    // Add lesson to completed list (if provided)
     if (lesson && !prog.lessonsCompleted.includes(lesson._id)) {
       prog.lessonsCompleted.push(lesson._id);
     }
 
-    // 5️⃣ Add XP
+    // Add XP
     const xpToAdd = Number(xpEarned) || 10;
     prog.xp += xpToAdd;
     prog.level = calculateLevel(prog.xp);
 
     await prog.save();
 
-    // 6️⃣ Update user xp & level
+    //  Update user xp & level
     await User.findByIdAndUpdate(student._id, {
       xp: prog.xp,
       level: prog.level
     });
 
-    // 7️⃣ Award badges
+    // Award badges
     const badgeEngine = require('../services/badgeEngineServices');
     const newBadges = await badgeEngine.checkAndAwardBadges(student._id);
 

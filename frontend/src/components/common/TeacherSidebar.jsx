@@ -129,7 +129,6 @@ export default function TeacherSidebar() {
         </motion.button>
       </motion.aside>
 
-      {/* FIXED: TOGGLE BUTTON OUTSIDE SIDEBAR */}
       <button
         onClick={() => setOpen(!open)}
         className="absolute top-4 left-[250px] z-50 bg-purple-600 text-white p-2 rounded-full shadow-md hover:bg-purple-700 transition"
