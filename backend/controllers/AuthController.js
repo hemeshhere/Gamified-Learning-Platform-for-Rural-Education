@@ -13,7 +13,6 @@ function createRefreshToken(){
   return crypto.randomBytes(64).toString('hex');
 }
 
-
 router.post('/register', async (req, res, next) => {
   try {
     const { name, email, password, role, phone } = req.body;

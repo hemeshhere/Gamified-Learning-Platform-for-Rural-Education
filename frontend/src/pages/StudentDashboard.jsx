@@ -12,6 +12,7 @@ import { HiOutlineLightningBolt, HiOutlineBookOpen } from "react-icons/hi";
 import { MdEmojiEvents } from "react-icons/md";
 import { BsTrophyFill } from "react-icons/bs";
 import { AiFillStar } from "react-icons/ai";
+import { FaComments } from "react-icons/fa";
 
 export default function StudentDashboard() {
   const rawUser = localStorage.getItem("user");
@@ -169,6 +170,14 @@ export default function StudentDashboard() {
             >
               <FiBell /> Notifications ({notifications.length})
             </Link>
+            <Link
+              to="/student/chat"
+              className="px-5 py-2 bg-purple-600 text-white rounded-full shadow-xl hover:scale-110 transition flex items-center gap-2"
+            >
+              <FaComments /> Chat with Teachers
+            </Link>
+
+
           </div>
         </motion.div>
 
