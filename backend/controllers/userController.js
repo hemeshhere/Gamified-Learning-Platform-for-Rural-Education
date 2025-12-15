@@ -52,4 +52,10 @@ router.put("/:id", requireAuth, requireRole(["teacher", "admin"]), async (req, r
   }
 });
 
+router.get("/teachers", async (req, res) => {
+  const teachers = await User.find({ role: "teacher" }).select("name email");
+  res.json(teachers);
+});
+
+
 module.exports = router;

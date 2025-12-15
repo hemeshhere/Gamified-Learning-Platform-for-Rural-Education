@@ -8,7 +8,9 @@ import {
   FiBell,
   FiSettings,
   FiUser,
+  FiMail,
 } from "react-icons/fi";
+ import { FaComments } from "react-icons/fa";
 import { HiOutlineLightningBolt } from "react-icons/hi";
 import { AiFillStar } from "react-icons/ai";
 import TeacherSidebar from "../components/common/TeacherSidebar";
@@ -29,43 +31,50 @@ export default function TeacherDashboard() {
 
   // Action cards data
   const cards = [
-    {
-      icon: <FiBook className="text-4xl text-blue-600" />,
-      title: "Create Lesson",
-      description: "Upload PDFs or Video-based learning material.",
-      link: "/teacher/create-lesson",
-    },
-    {
-      icon: <FiEdit className="text-4xl text-green-600" />,
-      title: "Create Quiz",
-      description: "Build MCQ quizzes for your students.",
-      link: "/teacher/create-quiz",
-    },
-    {
-      icon: <FiStar className="text-4xl text-yellow-500" />,
-      title: "Add XP",
-      description: "Reward students for progress.",
-      link: "/teacher/add-xp",
-    },
-    {
-      icon: <FiBell className="text-4xl text-red-500" />,
-      title: "Send Notification",
-      description: "Share important updates.",
-      link: "/teacher/send-notification",
-    },
-    {
-      icon: <FiSettings className="text-4xl text-purple-600" />,
-      title: "Manage Content",
-      description: "Edit or delete lessons and quizzes.",
-      link: "/teacher/manage",
-    },
-    {
-      icon: <FiUser className="text-4xl text-indigo-600" />,
-      title: "Students",
-      description: "View and manage student profiles.",
-      link: "/teacher/students",
-    },
-  ];
+  {
+    icon: <FiBook className="text-4xl text-blue-600" />,
+    title: "Create Lesson",
+    description: "Upload PDFs or Video-based learning material.",
+    link: "/teacher/create-lesson",
+  },
+  {
+    icon: <FiEdit className="text-4xl text-green-600" />,
+    title: "Create Quiz",
+    description: "Build MCQ quizzes for your students.",
+    link: "/teacher/create-quiz",
+  },
+  {
+    icon: <FiStar className="text-4xl text-yellow-500" />,
+    title: "Add XP",
+    description: "Reward students for progress.",
+    link: "/teacher/add-xp",
+  },
+  {
+    icon: <FiBell className="text-4xl text-red-500" />,
+    title: "Send Notification",
+    description: "Share important updates.",
+    link: "/teacher/send-notification",
+  },
+  {
+    icon: <FiSettings className="text-4xl text-purple-600" />,
+    title: "Manage Content",
+    description: "Edit or delete lessons and quizzes.",
+    link: "/teacher/manage",
+  },
+  {
+    icon: <FiUser className="text-4xl text-indigo-600" />,
+    title: "Students",
+    description: "View and manage student profiles.",
+    link: "/teacher/students",
+  },
+  {
+    icon: <FaComments className="text-4xl text-pink-600" />,
+    title: "Messages",
+    description: "Chat with students.",
+    link: "/teacher/chat",
+  }
+];
+
 
   return (
     <div className="flex min-h-screen relative overflow-hidden">
@@ -123,7 +132,6 @@ export default function TeacherDashboard() {
 
         {/* Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-
           {cards.map((card, i) => (
             <motion.div
               key={i}
@@ -133,7 +141,6 @@ export default function TeacherDashboard() {
               custom={i}
               className="rounded-2xl"
             >
-              {/* FIX: Hover animation only on THIS layer (not outer div) */}
               <motion.div
                 whileHover={{
                   scale: 1.06,
@@ -153,32 +160,7 @@ export default function TeacherDashboard() {
               </motion.div>
             </motion.div>
           ))}
-
         </div>
-
-        {/* UPCOMING FEATURES SECTION */}
-        <section className="mt-16">
-          <motion.h2
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-2xl font-semibold mb-4"
-          >
-            Coming Soon 🚀
-          </motion.h2>
-
-          <motion.ul
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="list-disc ml-6 text-gray-700 space-y-2"
-          >
-            <li>AI-powered Class Performance Insights</li>
-            <li>Lesson Engagement Analytics</li>
-            <li>Student Growth Heatmap</li>
-            <li>Gamified Teacher Leaderboards</li>
-          </motion.ul>
-        </section>
-
       </main>
     </div>
   );

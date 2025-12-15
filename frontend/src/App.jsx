@@ -1,3 +1,4 @@
+// App.jsx (FIXED)
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -20,6 +21,10 @@ import BadgeGallery from "./pages/BadgeGallery";
 import QuizList from "./components/quiz/QuizList";
 import QuizAttempt from "./components/quiz/QuizAttempt";
 
+// Chat (Student)
+import StudentChatList from "./pages/StudentChatList";
+import ChatRoom from "./pages/ChatScreen";
+
 // Teacher Pages
 import TeacherDashboard from "./pages/TeacherDashboard";
 import LessonUpload from "./pages/LessonUpload";
@@ -28,6 +33,8 @@ import TeacherAddXP from "./pages/TeacherAddXP";
 import TeacherSendNotification from "./pages/TeacherSendNotification";
 import TeacherManageContent from "./pages/TeacherManageContent";
 import TeacherStudentList from "./pages/TeacherStudentList";
+import TeacherChatList from "./pages/TeacherChatList";
+
 export default function App() {
   return (
     <BrowserRouter>
@@ -39,7 +46,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* ROOT REDIRECT BASED ON ROLE */}
+        {/* ROOT REDIRECT */}
         <Route
           path="/"
           element={
@@ -49,7 +56,7 @@ export default function App() {
           }
         />
 
-        {/* STUDENT ROUTES */}
+        {/* ---------------- STUDENT ROUTES ---------------- */}
         <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
           <Route path="/student" element={<StudentDashboard />} />
           <Route path="/lessons" element={<LessonsList />} />
@@ -59,9 +66,13 @@ export default function App() {
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/progress" element={<ProgressPage />} />
           <Route path="/badges" element={<BadgeGallery />} />
+
+          {/* Student Chat */}
+          <Route path="/student/chat" element={<StudentChatList />} />
+          <Route path="/student/chat/:teacherId" element={<ChatRoom />} />
         </Route>
 
-        {/* TEACHER ROUTES */}
+        {/* ---------------- TEACHER ROUTES ---------------- */}
         <Route element={<ProtectedRoute allowedRoles={["teacher", "admin"]} />}>
           <Route path="/teacher" element={<TeacherDashboard />} />
           <Route path="/teacher/create-lesson" element={<LessonUpload />} />
@@ -70,6 +81,10 @@ export default function App() {
           <Route path="/teacher/send-notification" element={<TeacherSendNotification />} />
           <Route path="/teacher/manage" element={<TeacherManageContent />} />
           <Route path="/teacher/students" element={<TeacherStudentList />} />
+
+          {/* Teacher Chat */}
+          <Route path="/teacher/chat" element={<TeacherChatList />} />
+          <Route path="/teacher/chat/:studentId" element={<ChatRoom />} />
         </Route>
 
       </Routes>
