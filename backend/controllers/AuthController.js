@@ -108,6 +108,32 @@ router.post('/refresh', async (req,res,next) => {
   } catch (err){ next(err); }
 });
 
+const { requireAuth } = require("../middlewares/authMiddleware");
+
+router.post(
+  "/change-password",
+  requireAuth, //  THIS IS REQUIRED
+  async (req, res, next) => {
+    try {
+      const { oldPassword, newPassword } = req.body;
+      const user = await User.findById(req.user.id);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+      const ok = await bcrypt.compare(oldPassword, user.passwordHash);
+      if (!ok) {
+        return res.status(401).json({ error: "Incorrect old password" });
+      }
+      user.passwordHash = await bcrypt.hash(newPassword, 10);
+      await user.save();
+      res.json({ success: true, message: "Password updated successfully" });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+
 router.post('/logout', async (req,res,next) => {
   try {
     const { refreshToken } = req.body;

@@ -1,14 +1,24 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 export default function ProtectedElement({ children, allowedRoles }) {
   const raw = localStorage.getItem("user");
   const user = raw ? JSON.parse(raw) : null;
+  const location = useLocation();
 
-  if (!user) return <Navigate to="/login" replace />;
+  // Logged-out user accessing root "/"
+  if (!user && location.pathname === "/") {
+    return <Navigate to="/landing" replace />;
+  }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
+  //Logged-out user accessing protected pages
+  if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Role-based restriction
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return <Navigate to="/" replace />;
   }
 
   return children;

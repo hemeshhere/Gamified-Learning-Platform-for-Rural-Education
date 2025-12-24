@@ -1,12 +1,14 @@
 // App.jsx (FIXED)
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ChangePassword from "./pages/ChangePassword";
 
 import ProtectedRoute from "./components/common/ProtectedRoute";
 import ProtectedElement from "./components/common/ProtectedElement";
 import RoleRedirect from "./components/common/RoleRedirect";
 
 // Auth
+import Landing from "./pages/Landing";
 import Login from "./components/auth/Login";
 import Register from "./components/auth/Register";
 import GlobalLoader from "./components/common/GlobalLoader";
@@ -43,6 +45,7 @@ export default function App() {
       <Routes>
 
         {/* PUBLIC ROUTES */}
+        <Route path="/landing" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
@@ -66,6 +69,7 @@ export default function App() {
           <Route path="/notifications" element={<NotificationsPage />} />
           <Route path="/progress" element={<ProgressPage />} />
           <Route path="/badges" element={<BadgeGallery />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
           {/* Student Chat */}
           <Route path="/student/chat" element={<StudentChatList />} />
@@ -81,6 +85,7 @@ export default function App() {
           <Route path="/teacher/send-notification" element={<TeacherSendNotification />} />
           <Route path="/teacher/manage" element={<TeacherManageContent />} />
           <Route path="/teacher/students" element={<TeacherStudentList />} />
+          <Route path="/change-password" element={<ChangePassword />} />
 
           {/* Teacher Chat */}
           <Route path="/teacher/chat" element={<TeacherChatList />} />
