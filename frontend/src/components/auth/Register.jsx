@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
+import { Gamepad2, Sparkles, Loader2 } from "lucide-react";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function Register() {
     validateField(field, value);
   };
 
-  // VALIDATION RULES
+  // VALIDATION
   const validateField = (field, value) => {
     let msg = "";
 
@@ -42,23 +43,18 @@ export default function Register() {
     setErrors((prev) => ({ ...prev, [field]: msg }));
   };
 
-  const isFormValid = () => {
-    return (
-      payload.name.length >= 3 &&
-      payload.email.length > 5 &&
-      !errors.email &&
-      !errors.password &&
-      payload.password.length >= 6
-    );
-  };
+  const isFormValid = () =>
+    payload.name.length >= 3 &&
+    payload.email.length > 5 &&
+    !errors.email &&
+    !errors.password &&
+    payload.password.length >= 6;
 
-  // FORM SUBMISSION
-
+  // SUBMIT
   const submit = async (e) => {
     e.preventDefault();
     setServerError("");
 
-    // Final validation
     if (!isFormValid()) {
       setServerError("Please fix the errors before submitting.");
       return;
@@ -70,12 +66,10 @@ export default function Register() {
       const res = await api.post("/auth/register", payload);
       const data = res.data;
 
-      // Save login automatically
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redirect by role
       navigate(data.user.role === "teacher" ? "/teacher" : "/");
     } catch (err) {
       setServerError(err?.response?.data?.error || "Registration failed.");
@@ -84,14 +78,27 @@ export default function Register() {
     }
   };
 
-  // UI
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-4">Create an account</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 px-4">
+      <div className="relative bg-white/90 backdrop-blur-xl p-10 rounded-3xl shadow-2xl w-full max-w-md border border-purple-200">
 
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+            <Gamepad2 className="text-white w-7 h-7" />
+          </div>
+        </div>
+
+        <h2 className="text-3xl font-extrabold text-center mb-2">
+          Create an Account ✨
+        </h2>
+        <p className="text-center text-gray-600 mb-6">
+          Join GramiLearn and start your learning journey
+        </p>
+
+        {/* Server Error */}
         {serverError && (
-          <div className="bg-red-100 border border-red-400 text-red-700 p-3 rounded mb-4 text-sm">
+          <div className="bg-red-100 border border-red-300 text-red-600 p-3 rounded-xl mb-5 text-sm text-center">
             {serverError}
           </div>
         )}
@@ -100,11 +107,13 @@ export default function Register() {
 
           {/* NAME */}
           <div>
-            <label className="block text-sm font-medium mb-1">Full name</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Full Name
+            </label>
             <input
               value={payload.name}
               onChange={(e) => update("name", e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
               placeholder="John Doe"
               required
             />
@@ -115,12 +124,14 @@ export default function Register() {
 
           {/* EMAIL */}
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Email
+            </label>
             <input
               type="email"
               value={payload.email}
               onChange={(e) => update("email", e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
               placeholder="john@example.com"
               required
             />
@@ -131,15 +142,16 @@ export default function Register() {
 
           {/* PASSWORD */}
           <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Password
+            </label>
             <input
               type="password"
               value={payload.password}
               onChange={(e) => update("password", e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
-              placeholder="Choose a secure password"
+              className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+              placeholder="At least 6 characters & 1 number"
               required
-              minLength={6}
             />
             {errors.password && (
               <p className="text-red-500 text-xs mt-1">{errors.password}</p>
@@ -148,22 +160,26 @@ export default function Register() {
 
           {/* PHONE */}
           <div>
-            <label className="block text-sm font-medium mb-1">Phone (optional)</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Phone (optional)
+            </label>
             <input
               value={payload.phone}
               onChange={(e) => update("phone", e.target.value)}
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
               placeholder="+91 98765 43210"
             />
           </div>
 
           {/* ROLE */}
           <div>
-            <label className="block text-sm font-medium mb-1">Role</label>
+            <label className="block text-sm font-medium mb-1 text-gray-700">
+              Role
+            </label>
             <select
               value={payload.role}
               onChange={(e) => update("role", e.target.value)}
-              className="w-full border rounded-lg px-3 py-2"
+              className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
             >
               <option value="student">Student</option>
               <option value="teacher">Teacher</option>
@@ -172,21 +188,38 @@ export default function Register() {
             </select>
           </div>
 
-          {/* SUBMIT BUTTON */}
+          {/* SUBMIT */}
           <button
             disabled={busy}
-            className={`w-full py-2 rounded-lg text-white font-semibold transition 
-              ${busy ? "bg-green-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"}`}
+            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white font-semibold transition-all
+              ${
+                busy
+                  ? "bg-purple-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-purple-600 to-pink-500 hover:scale-[1.02]"
+              }`}
           >
-            {busy ? "Creating account..." : "Register"}
+            {busy ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Creating account...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Register
+              </>
+            )}
           </button>
         </form>
 
-        <div className="text-center mt-4">
-          <span className="text-gray-600 text-sm">Already have an account?</span>
+        {/* Footer */}
+        <div className="text-center mt-6">
+          <span className="text-gray-600 text-sm">
+            Already have an account?{" "}
+          </span>
           <button
             onClick={() => navigate("/login")}
-            className="text-blue-600 font-medium text-sm hover:underline ml-1"
+            className="text-purple-600 font-semibold text-sm hover:underline"
           >
             Login
           </button>

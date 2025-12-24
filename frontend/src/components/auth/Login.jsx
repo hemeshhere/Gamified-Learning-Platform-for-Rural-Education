@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
+import { Gamepad2, Sparkles, Loader2 } from "lucide-react";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,16 +18,11 @@ export default function Login() {
     try {
       const res = await api.post("/auth/login", { email, password });
       const data = res.data;
-      // Backend returns:
-      // accessToken
-      // refreshToken
-      // user { id, role, name, email, ... }
 
       localStorage.setItem("accessToken", data.accessToken);
       localStorage.setItem("refreshToken", data.refreshToken);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      // Redirect based on role
       if (data.user.role === "teacher" || data.user.role === "admin") {
         navigate("/teacher");
       } else {
@@ -43,22 +39,41 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center mb-6">Welcome Back 👋</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-100 via-pink-100 to-blue-100 px-4">
+      
+      {/* Card */}
+      <div className="relative bg-white/90 backdrop-blur-xl p-10 rounded-3xl shadow-2xl w-full max-w-md border border-purple-200">
 
+        {/* Logo */}
+        <div className="flex justify-center mb-6">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+            <Gamepad2 className="text-white w-7 h-7" />
+          </div>
+        </div>
+
+        <h2 className="text-3xl font-extrabold text-center mb-2">
+          Welcome Back 
+        </h2>
+        <p className="text-center text-gray-600 mb-6">
+          Login to continue your learning adventure
+        </p>
+
+        {/* Error */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-600 p-3 rounded mb-4 text-sm">
+          <div className="bg-red-100 border border-red-300 text-red-600 p-3 rounded-xl mb-5 text-sm text-center">
             {error}
           </div>
         )}
 
+        {/* Form */}
         <form onSubmit={submit} className="space-y-5">
           <div>
-            <label className="block mb-1 text-sm font-medium">Email</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700">
+              Email
+            </label>
             <input
               type="email"
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
               placeholder="john@gmail.com"
               required
               value={email}
@@ -67,10 +82,12 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="block mb-1 text-sm font-medium">Password</label>
+            <label className="block mb-1 text-sm font-medium text-gray-700">
+              Password
+            </label>
             <input
               type="password"
-              className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              className="w-full border rounded-xl px-4 py-3 focus:ring-2 focus:ring-purple-500 focus:outline-none"
               placeholder="••••••••"
               required
               value={password}
@@ -80,22 +97,35 @@ export default function Login() {
 
           <button
             disabled={busy}
-            className={`w-full py-2 rounded-lg text-white font-semibold transition 
+            className={`w-full flex items-center justify-center gap-2 py-3 rounded-xl text-white font-semibold transition-all
               ${
                 busy
-                  ? "bg-blue-400 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
+                  ? "bg-purple-400 cursor-not-allowed"
+                  : "bg-gradient-to-r from-purple-600 to-pink-500 hover:scale-[1.02]"
               }`}
           >
-            {busy ? "Logging in..." : "Login"}
+            {busy ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Logging in...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Login
+              </>
+            )}
           </button>
         </form>
 
-        <div className="text-center mt-5">
-          <span className="text-gray-600 text-sm">Don't have an account? </span>
+        {/* Footer */}
+        <div className="text-center mt-6">
+          <span className="text-gray-600 text-sm">
+            Don&apos;t have an account?{" "}
+          </span>
           <button
             onClick={() => navigate("/register")}
-            className="text-blue-600 font-medium text-sm hover:underline"
+            className="text-purple-600 font-semibold text-sm hover:underline"
           >
             Register
           </button>

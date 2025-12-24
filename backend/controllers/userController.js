@@ -29,9 +29,7 @@ router.delete("/:id", requireAuth, requireRole(["teacher", "admin"]), async (req
 });
 
 
-// ===============================
 // UPDATE STUDENT
-// ===============================
 router.put("/:id", requireAuth, requireRole(["teacher", "admin"]), async (req, res, next) => {
   try {
     const updates = req.body;

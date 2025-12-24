@@ -1,10 +1,7 @@
-// src/components/common/Navbar.jsx
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
-import {
-  FaGraduationCap,
-} from "react-icons/fa";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaGraduationCap } from "react-icons/fa";
 import {
   FiBook,
   FiEdit,
@@ -13,6 +10,7 @@ import {
   FiUser,
   FiMenu,
   FiX,
+  FiKey,
 } from "react-icons/fi";
 
 export default function Navbar() {
@@ -21,216 +19,252 @@ export default function Navbar() {
   const role = user?.role;
 
   const location = useLocation();
-  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  const profileRef = useRef(null);
+
+  const homeLink =
+    role === "teacher" || role === "admin" ? "/teacher" : "/student";
 
   const logout = () => {
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("user");
+    localStorage.clear();
     window.location.href = "/login";
   };
 
-  const homeLink =
-    role === "teacher" || role === "admin" ? "/teacher" : "/";
+  useEffect(() => {
+    setMenuOpen(false);
+    setProfileOpen(false);
+  }, [location.pathname]);
 
-  // Animate nav items
-  const navItem = {
-    hover: { scale: 1.1 },
-    tap: { scale: 0.95 },
-  };
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
-  // Mobile panel animation
-  const mobileMenu = {
-    hidden: { x: "100%" },
-    visible: { x: 0 },
+  const studentLinks = [
+    { to: "/lessons", icon: FiBook, label: "Lessons" },
+    { to: "/quiz", icon: FiEdit, label: "Quizzes" },
+    { to: "/notifications", icon: FiBell, label: "Notifications" },
+  ];
+
+  const isActive = (path) => location.pathname.startsWith(path);
+
+  /* ✅ FIXED fun hover animation */
+  const funHover = {
+    rest: { scale: 1, rotate: 0 },
+    hover: {
+      scale: 1.18,
+      rotate: [-2, 2, -2, 0],
+      transition: {
+        rotate: { type: "tween", duration: 0.35 },
+        scale: { type: "spring", stiffness: 300, damping: 12 },
+      },
+    },
+    tap: { scale: 0.9 },
   };
 
   return (
     <>
       {/* NAVBAR */}
       <motion.nav
-        initial={{ y: -40, opacity: 0 }}
+        initial={{ y: -30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 80 }}
-        className="backdrop-blur-lg bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg px-6 py-4 flex justify-between items-center sticky top-0 z-50"
+        transition={{ type: "spring", stiffness: 90 }}
+        className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 shadow-lg backdrop-blur-md"
       >
-        {/* LEFT SIDE */}
-        <div className="flex items-center gap-6">
+        <div className="flex justify-between items-center">
           {/* LOGO */}
-          <motion.div whileHover={{ scale: 1.15 }} whileTap={{ scale: 0.95 }}>
-            <Link
-              to={homeLink}
-              className="text-2xl font-extrabold tracking-wide drop-shadow-md flex items-center gap-2"
+          <Link
+            to={homeLink}
+            className="flex items-center gap-2 text-2xl font-extrabold"
+          >
+            <motion.div
+              whileHover={{ scale: 1.25, rotate: [0, -8, 8, 0] }}
+              transition={{
+                rotate: { type: "tween", duration: 0.4 },
+                scale: { type: "spring", stiffness: 220 },
+              }}
             >
-              <FaGraduationCap className="text-3xl" />
-              <span className="hidden sm:inline">Gamified</span>
-            </Link>
-          </motion.div>
+              <FaGraduationCap className="text-4xl" />
+            </motion.div>
+            <span className="hidden sm:block">GramiLearn</span>
+          </Link>
 
           {/* DESKTOP STUDENT LINKS */}
           {role === "student" && (
-            <div className="hidden md:flex items-center gap-4">
-              <motion.div variants={navItem} whileHover="hover" whileTap="tap">
-                <Link
-                  to="/lessons"
-                  className={`px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 ${
-                    location.pathname.includes("lessons")
-                      ? "bg-white/40"
-                      : "bg-white/20 hover:bg-white/30"
-                  }`}
+            <div className="hidden md:flex gap-4">
+              {studentLinks.map(({ to, icon: Icon, label }) => (
+                <motion.div
+                  key={to}
+                  variants={funHover}
+                  initial="rest"
+                  whileHover="hover"
+                  whileTap="tap"
                 >
-                  <FiBook /> Lessons
-                </Link>
-              </motion.div>
-
-              <motion.div variants={navItem} whileHover="hover" whileTap="tap">
-                <Link
-                  to="/quiz"
-                  className={`px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 ${
-                    location.pathname.includes("quiz")
-                      ? "bg-white/40"
-                      : "bg-white/20 hover:bg-white/30"
-                  }`}
-                >
-                  <FiEdit /> Quizzes
-                </Link>
-              </motion.div>
-
-              <motion.div variants={navItem} whileHover="hover" whileTap="tap">
-                <Link
-                  to="/notifications"
-                  className={`px-4 py-1.5 rounded-full text-sm font-semibold flex items-center gap-2 ${
-                    location.pathname.includes("notifications")
-                      ? "bg-white/40"
-                      : "bg-white/20 hover:bg-white/30"
-                  }`}
-                >
-                  <FiBell /> Notifications
-                </Link>
-              </motion.div>
+                  <Link
+                    to={to}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 ${
+                      isActive(to)
+                        ? "bg-white/40"
+                        : "bg-white/20 hover:bg-white/30"
+                    }`}
+                  >
+                    <Icon className="text-lg" /> {label}
+                  </Link>
+                </motion.div>
+              ))}
             </div>
           )}
-        </div>
 
-        {/* RIGHT SIDE (DESKTOP) */}
-        <div className="hidden md:flex items-center gap-4">
-
-          {/* TEACHER DASHBOARD LINK */}
-          {(role === "teacher" || role === "admin") && (
-            <motion.div variants={navItem} whileHover="hover" whileTap="tap">
-              <Link
-                to="/teacher"
-                className="px-3 py-1 bg-white/20 hover:bg-white/30 rounded-md text-sm flex items-center gap-2"
-              >
-                <FiUser /> Teacher
-              </Link>
-            </motion.div>
-          )}
-
-          {/* LOGGED IN USER */}
-          {user ? (
-            <>
-              <span className="text-sm font-semibold flex items-center gap-1">
-                <FiUser /> {user.name || user.email}
-              </span>
-
-              <motion.button
-                variants={navItem}
-                whileHover={{ scale: 1.1, backgroundColor: "#ef4444" }}
+          {/* RIGHT */}
+          <div className="hidden md:flex items-center gap-4">
+            {(role === "teacher" || role === "admin") && (
+              <motion.div
+                variants={funHover}
+                initial="rest"
+                whileHover="hover"
                 whileTap="tap"
-                onClick={logout}
-                className="px-3 py-1 bg-red-400 rounded-full shadow flex items-center gap-1 text-sm"
               >
-                <FiLogOut /> Logout
-              </motion.button>
-            </>
-          ) : (
-            <motion.div variants={navItem} whileHover="hover" whileTap="tap">
-              <Link
-                to="/login"
-                className="px-4 py-1.5 bg-white rounded-full text-blue-600 font-semibold shadow hover:bg-gray-100 flex items-center gap-2"
-              >
-                Login
-              </Link>
-            </motion.div>
-          )}
-        </div>
+                <Link
+                  to="/teacher"
+                  className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 ${
+                    isActive("/teacher")
+                      ? "bg-white/40"
+                      : "bg-white/20 hover:bg-white/30"
+                  }`}
+                >
+                  <FiUser /> Dashboard
+                </Link>
+              </motion.div>
+            )}
 
-        {/* MOBILE MENU TOGGLE */}
-        <button
-          onClick={() => setMenuOpen(true)}
-          className="md:hidden text-3xl"
-        >
-          <FiMenu />
-        </button>
+            {/* PROFILE */}
+            {user && (
+              <div className="relative" ref={profileRef}>
+                <motion.button
+                  onClick={() => setProfileOpen((p) => !p)}
+                  whileHover={{ scale: 1.15, rotate: [0, 3, -3, 0] }}
+                  transition={{
+                    rotate: { type: "tween", duration: 0.3 },
+                    scale: { type: "spring", stiffness: 200 },
+                  }}
+                  className="bg-yellow-300 text-black px-4 py-2 rounded-full flex items-center gap-2 text-sm font-bold shadow-md"
+                >
+                  <FiUser />
+                  <span className="max-w-[120px] truncate">
+                    {user.name || user.email}
+                  </span>
+                </motion.button>
+
+                <AnimatePresence>
+                  {profileOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute right-0 mt-2 w-52 bg-white text-gray-800 rounded-xl shadow-lg overflow-hidden"
+                    >
+                      <Link
+                        to="/change-password"
+                        className="flex items-center gap-2 px-4 py-3 hover:bg-gray-100"
+                      >
+                        <FiKey /> Change Password
+                      </Link>
+                      <button
+                        onClick={logout}
+                        className="flex items-center gap-2 w-full text-left px-4 py-3 hover:bg-red-100 text-red-600"
+                      >
+                        <FiLogOut /> Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+          </div>
+
+          {/* MOBILE MENU BUTTON */}
+          <button
+            onClick={() => setMenuOpen(true)}
+            className="md:hidden text-3xl"
+          >
+            <FiMenu />
+          </button>
+        </div>
       </motion.nav>
 
-      {/* MOBILE SLIDE-IN MENU */}
-      <motion.div
-        variants={mobileMenu}
-        initial="hidden"
-        animate={menuOpen ? "visible" : "hidden"}
-        transition={{ type: "spring", stiffness: 120 }}
-        className="fixed top-0 right-0 w-64 h-full bg-gradient-to-b from-blue-600 to-purple-700 text-white shadow-xl z-50 p-6"
-      >
-        {/* CLOSE BUTTON */}
-        <button
-          onClick={() => setMenuOpen(false)}
-          className="text-3xl absolute top-5 right-5"
-        >
-          <FiX />
-        </button>
-
-        <div className="mt-12 space-y-6">
-          {role === "student" && (
-            <>
-              <Link
-                to="/lessons"
-                className="block text-lg font-semibold flex items-center gap-2"
-                onClick={() => setMenuOpen(false)}
-              >
-                <FiBook /> Lessons
-              </Link>
-
-              <Link
-                to="/quiz"
-                className="block text-lg font-semibold flex items-center gap-2"
-                onClick={() => setMenuOpen(false)}
-              >
-                <FiEdit /> Quizzes
-              </Link>
-
-              <Link
-                to="/notifications"
-                className="block text-lg font-semibold flex items-center gap-2"
-                onClick={() => setMenuOpen(false)}
-              >
-                <FiBell /> Notifications
-              </Link>
-            </>
-          )}
-
-          {(role === "teacher" || role === "admin") && (
-            <Link
-              to="/teacher"
-              className="block text-lg font-semibold flex items-center gap-2"
+      {/* MOBILE OVERLAY + DRAWER */}
+      <AnimatePresence>
+        {menuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black z-40"
               onClick={() => setMenuOpen(false)}
-            >
-              <FiUser /> Teacher Dashboard
-            </Link>
-          )}
+            />
 
-          {/* Logout */}
-          {user && (
-            <button
-              onClick={logout}
-              className="text-left text-lg font-semibold flex items-center gap-2 text-red-200"
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", stiffness: 130 }}
+              className="fixed top-0 right-0 w-72 h-full bg-gradient-to-b from-blue-600 to-purple-700 text-white z-50 p-6"
             >
-              <FiLogOut /> Logout
-            </button>
-          )}
-        </div>
-      </motion.div>
+              <button
+                onClick={() => setMenuOpen(false)}
+                className="absolute top-5 right-5 text-3xl"
+              >
+                <FiX />
+              </button>
+
+              <div className="mt-14 space-y-6 text-lg font-semibold">
+                {role === "student" &&
+                  studentLinks.map(({ to, icon: Icon, label }) => (
+                    <motion.div
+                      key={to}
+                      whileHover={{ scale: 1.15, x: 10 }}
+                      transition={{ type: "spring", stiffness: 250 }}
+                    >
+                      <Link to={to} className="flex gap-3 items-center">
+                        <Icon /> {label}
+                      </Link>
+                    </motion.div>
+                  ))}
+
+                {(role === "teacher" || role === "admin") && (
+                  <Link to="/teacher" className="flex gap-3 items-center">
+                    <FiUser /> Dashboard
+                  </Link>
+                )}
+
+                <Link
+                  to="/change-password"
+                  className="flex gap-3 items-center"
+                >
+                  <FiKey /> Change Password
+                </Link>
+
+                {user && (
+                  <button
+                    onClick={logout}
+                    className="flex gap-3 items-center text-red-200"
+                  >
+                    <FiLogOut /> Logout
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 }
