@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 const crypto = require('crypto');
 const User = require('../models/userModel');
-const RefreshToken = require('../models/RefreshTokenModel');
+const RefreshToken = require('../models/refreshTokenModel');
 const bcrypt = require("bcrypt");
 
 function signAccess(user){
@@ -143,6 +144,61 @@ router.post('/logout', async (req,res,next) => {
     }
     res.json({ ok:true });
   } catch (err){ next(err); }
+});
+
+router.post("/google", async (req, res, next) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) {
+      return res.status(400).json({ error: "Missing Google token" });
+    }
+    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const { sub: googleId, name, email } = payload;
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({
+        name,
+        email,
+        googleId,
+        role: "student", 
+      });
+    }
+    const accessToken = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    const refreshToken = crypto.randomBytes(64).toString("hex");
+    const tokenHash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
+
+    await RefreshToken.create({
+      user: user._id,
+      tokenHash,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
+    res.status(200).json({
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        role: user.role,
+        email: user.email,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ error: "Invalid Google token" });
+  }
 });
 
 module.exports = router;

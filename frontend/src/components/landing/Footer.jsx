@@ -56,11 +56,11 @@ const Footer = () => {
               </div>
               <div className="flex items-center gap-3 text-background/70 hover:text-background transition">
                 <Phone className="w-5 h-5 text-primary" />
-                <span>+91 1800-XXX-XXXX</span>
+                <span>+91 7004903132</span>
               </div>
               <div className="flex items-center gap-3 text-background/70 hover:text-background transition">
                 <MapPin className="w-5 h-5 text-primary" />
-                <span>New Delhi, India</span>
+                <span>LPU, Punjab, India</span>
               </div>
             </div>
           </div>

@@ -50,11 +50,11 @@ const Navbar = () => {
           <Link to="/" className="flex items-center gap-3">
             <motion.div
               whileHover={{ scale: 1.08, rotate: 8 }}
-              className="w-11 h-11 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg"
+              className="w-11 h-11 rounded-2xl bg-pink-500 flex items-center justify-center shadow-lg"
             >
               <Gamepad2 className="text-white" />
             </motion.div>
-            <span className="text-2xl font-extrabold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+            <span className="text-2xl font-extrabold bg-purple-600 bg-clip-text text-transparent">
               GramiLearn
             </span>
           </Link>
